@@ -256,15 +256,13 @@ function restartQuiz() {
    document.getElementById("result").innerText = '';
    document.getElementById("answer-summary").innerHTML = '';
    document.getElementById("restart-button").style.display = "none"; // Neustart Button ausblenden
+   document.querySelector(".navigation-buttons").style.display = "flex"; // Navigation wieder anzeigen
    loadQuestion(currentQuestionIndex); // Erste Frage laden
 }
 
 // Initiale Frage laden
 loadQuestion(currentQuestionIndex);
 </script>
-
-<!-- Neustart Button -->
-<button id="restart-button" style="display:none;" onclick="restartQuiz()">Quiz neu starten</button>
 
 </body>
 </html>
