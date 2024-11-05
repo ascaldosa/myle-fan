@@ -57,10 +57,10 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color .3s ease;
+            transition: background-color .3s ease; /* Added transform for button effect */
         }
         button:hover {
-            background-color: #a00;
+            background-color: #a00; /* Hover effect */
         }
         .result {
             font-weight: bold;
@@ -140,113 +140,131 @@
     </div>
     <div class="result" id="result"></div>
     <div class="answer-summary" id="answer-summary"></div>
+    <button id="restart-button" style="display:none;" onclick="restartQuiz()">Quiz neu starten</button> <!-- Neu starten Button -->
 </div>
 
 <script>
-    // Liste der Fragen und Antworten
-    const questions = [
-        { question: "In welchem Jahr veröffentlichte Myle 'Late Night High'?", options: ["2020", "2019", "2021"], answer: "2020" },
-        { question: "Wie viele Alben hat Myle veröffentlicht?", options: ["2", "3", "4"], answer: "2" },
-        { question: "Was ist Myles bekanntester Song?", options: ["Hold Me", "Mutual", "Sad Boy Summer"], answer: "Hold Me" },
-        { question: "In welcher Stadt wurde Myle geboren?", options: ["Ravensburg", "Berlin", "München"], answer: "Ravensburg" },
-        { question: "Welches Genre beschreibt Myles Musik am besten?", options: ["Pop", "Rock", "Hip-Hop"], answer: "Pop" },
-        { question: "Welches Jahr markiert Myles erstes Konzert?", options:["2022", "2023", "2021"], answer:"2021"},
-        { question:"Wie lautet der Titel von Myles zweitem Album?", options:["Overkill","Mutual Feelings","Late Night Vibes"], answer:"Overkill"},
-        { question:"Wie viele Songs hat Myle veröffentlicht?", options:["22","18","25"], answer:"22"},
-        { question:"Welcher Song ist eine Live-Version?", options:["Overkill","Mutual","Sad Boy Summer"], answer:"Overkill"},
-        { question:"Welcher Song ist der neueste?", options:["Lie You Love Me","Run Away","Following You"], answer:"Lie You Love Me"},
-        { question:"Welches Instrument spielt Myle?", options:["Gitarre","Klavier","Schlagzeug"], answer:"Gitarre"},
-        { question:"Mit wem hat Myle einen Song veröffentlicht?", options:["Lukas","Tom","Max"], answer:"Lukas"},
-        { question:"Wie lautet Myles Künstlername?", options:["Myle","Miles","Myley"], answer:"Myle"},
-        { question:"Wie heißt Myles Debütsingle?", options:["Hold Me","Late Night High","Run Away"], answer:"Late Night High"},
-        { question:"Welcher Song wurde 2023 veröffentlicht?", options:["Patience","Love Sucks","Run Away"], answer:"Run Away"},
-        { question:"Welches Label produziert Myle?", options:["Independent","Sony","Warner"], answer:"Independent"},
-        { question:"Welches Instrument dominiert in 'Mutual'?", options:["Gitarre","Synthesizer","Schlagzeug"], answer:"Gitarre"},
-        { question:"Welches Land ist Myles Heimatland?", options:["Deutschland","Schweiz","Österreich"], answer:"Deutschland"},
-        { question:"Welche Farbe hat das Cover von 'Overkill'?", options:["Schwarz","Rot","Blau"], answer:"Rot"},
-        { question:"Welcher Song handelt von einer Trennung?", options:["Love Sucks","Overkill","Sad Boy Summer"], answer:"Love Sucks"}
-    ];
+// Liste der Fragen und Antworten mit Auswahlmöglichkeiten
+const questions = [
+    { question:"In welchem Jahr veröffentlichte Myle seine erste Single 'Late Night High'?", options:["2019", "2020", "2021"], answer:"2020" },
+    { question:"Wie viele Alben hat Myle bis jetzt veröffentlicht?", options:["1", "2", "3"], answer:"1" }, // Stand 2024
+    { question:"Welcher Song gilt als Myles bekanntester Hit?", options:["Hold Me", "Mutual", "Sad Boy Summer"], answer:"Hold Me" },
+    { question:"In welcher Stadt wurde Myle geboren?", options:["Ravensburg", "Berlin", "München"], answer:"Ravensburg" },
+    { question:"Welches Musikgenre beschreibt Myles Stil am besten?", options:["Pop", "Rock", "Hip-Hop"], answer:"Pop" },
+    { question:"In welchem Jahr begann Myle mit Support-Acts aufzutreten?", options:["2020", "2021", "2022"], answer:"2021" },
+    { question:"Wie heißt Myles zweites Album?", options:["Overkill","Songs to Scream in the Car","Late Night Vibes"], answer:"Songs to Scream in the Car" }, // veröffentlicht in 2023
+    { question:"Wie viele Songs hat Myle insgesamt veröffentlicht?", options:["22","23","25"], answer:"23" }, // Stand 2024
+    { question:"Welcher Song von Myle ist als Live-Version bekannt?", options:["Overkill","Mutual","Sad Boy Summer"], answer:"Overkill" },
+    { question:"Welcher Song ist der aktuellste von Myle?", options:["Lie You Love Me","Run Away","Following You"], answer:"Lie You Love Me" },
+    { question:"Welches Instrument spielt Myle hauptsächlich?", options:["Gitarre","Klavier","Schlagzeug"], answer:"Gitarre" },
+    { question:"Mit welchem Künstler hat Myle einen Song veröffentlicht?", options:["Lukas","Tom","Max"], answer:"Lukas" },
+    { question:"Wie lautet Myles Künstlername?", options:["Milo","Miles","Myle"], answer:"Myle" },
+    { question:"Wie heißt die Debütsingle von Myle?", options:["Hold Me","Late Night High","Run Away"], answer:"Late Night High" },
+    { question:"Welcher Song wurde im Jahr 2023 veröffentlicht?", options:["Patience","Love Sucks","Run Away"], answer:"Run Away" },
+    { question:"Welches Label unterstützt Myle bei seinen Veröffentlichungen?", options:["Independent","Sony","Warner"], answer:"Independent" },
+    { question:"Welches Instrument dominiert in 'Mutual'?", options:["Gitarre","Synthesizer","Schlagzeug"], answer:"Gitarre" },
+    { question:"In welchem Land ist Myle aufgewachsen?", options:["Deutschland","Österreich","Schweiz"], answer:"Deutschland" },
+    { question:"Welche Farbe hat das Cover von Myles Album 'Overkill'?", options:["Schwarz","Rot","Blau"], answer:"Rot" },
+    { question:"Welcher Song handelt von einer Trennung?", options:["Love Sucks","Sad Boy Summer","Overkill"], answer:"Love Sucks" }
+];
 
-    let currentQuestionIndex = 0;
-    let score = 0;
-    const userAnswers = [];
+let currentQuestionIndex = 0;
+let score = 0;
+const userAnswers = [];
 
-    function loadQuestion(index) {
-        const questionContainer = document.getElementById("quiz-content");
-        questionContainer.innerHTML = '';
+function loadQuestion(index) {
+    const questionContainer = document.getElementById("quiz-content");
+    questionContainer.innerHTML = '';
 
-        const questionElement = document.createElement("div");
-        questionElement.className = "question";
-        
-       // Frage und Optionen hinzufügen
-       questionElement.innerHTML = `<p>${index + 1}. ${questions[index].question}</p>`;
-       questions[index].options.forEach(option => {
-           const optionElement = document.createElement("label");
-           optionElement.innerHTML = `
-               <input type="radio" name="answer" value="${option}"> ${option}
-           `;
-           questionElement.appendChild(optionElement);
-           questionElement.appendChild(document.createElement("br"));
-       });
+    const questionElement = document.createElement("div");
+    questionElement.className = "question";
+    
+   // Frage und Optionen hinzufügen
+   questionElement.innerHTML = `<p>${index + 1}. ${questions[index].question}</p>`;
+   questions[index].options.forEach(option => {
+       const optionElement = document.createElement("label");
+       optionElement.innerHTML = `
+           <input type="radio" name="answer" value="${option}"> ${option}
+       `;
+       questionElement.appendChild(optionElement);
+       questionElement.appendChild(document.createElement("br"));
+   });
 
-       // Frage in den Container einfügen
-       questionContainer.appendChild(questionElement);
+   // Frage in den Container einfügen
+   questionContainer.appendChild(questionElement);
 
-       // Navigation Buttons steuern
-       document.getElementById("prev-button").style.display = index > 0 ? "block" : "none";
-   }
+   // Navigation Buttons steuern
+   document.getElementById("prev-button").style.display = index > 0 ? "block" : "none";
+}
 
-   function nextQuestion() {
-       const selectedOption = document.querySelector('input[name="answer"]:checked');
-       if (selectedOption) {
-           userAnswers[currentQuestionIndex] = selectedOption.value;
+function nextQuestion() {
+   const selectedOption = document.querySelector('input[name="answer"]:checked');
+   if (selectedOption) {
+       userAnswers[currentQuestionIndex] = selectedOption.value;
 
-           if (selectedOption.value === questions[currentQuestionIndex].answer) score++;
-           currentQuestionIndex++;
+       if (selectedOption.value === questions[currentQuestionIndex].answer) score++;
+       currentQuestionIndex++;
 
-           if (currentQuestionIndex < questions.length) {
-               loadQuestion(currentQuestionIndex);
-           } else {
-               showResult();
-           }
-       } else {
-           alert("Bitte eine Antwort auswählen");
-       }
-   }
-
-   function previousQuestion() {
-       if (currentQuestionIndex > 0) {
-           currentQuestionIndex--;
+       if (currentQuestionIndex < questions.length) {
            loadQuestion(currentQuestionIndex);
+       } else {
+           showResult();
        }
+   } else {
+       alert("Bitte wählen Sie eine Antwort aus.");
    }
+}
 
-   function showResult() {
-       const resultContainer = document.getElementById("result");
-       const answerSummary = document.getElementById("answer-summary");
-       const percentage = (score / questions.length) * 100;
-
-       resultContainer.innerText = `Du bist ${percentage.toFixed(2)}% Fan von Myle!`;
-
-       // Zusammenfassung der Antworten
-       answerSummary.innerHTML = '<h3>Antwortzusammenfassung:</h3>';
-       questions.forEach((q, index) => {
-           const userAnswer = userAnswers[index] || "Nicht beantwortet";
-           const correctAnswer = q.answer;
-
-           answerSummary.innerHTML += `<p><strong>Frage ${index + 1}:</strong> ${q.question}<br>
-           <strong>Deine Antwort:</strong> ${userAnswer}<br>
-           <strong>Korrekte Antwort:</strong> ${correctAnswer}</p>`;
-       });
-
-       // Quiz-Ende, Navigation ausblenden
-       document.querySelector(".navigation-buttons").style.display = "none";
-       document.getElementById("quiz-content").innerHTML = '';
+function previousQuestion() {
+   if (currentQuestionIndex > 0) {
+       currentQuestionIndex--;
+       loadQuestion(currentQuestionIndex);
    }
+}
 
-   // Initiale Frage laden
-   loadQuestion(currentQuestionIndex);
+function showResult() {
+   const resultContainer = document.getElementById("result");
+   const answerSummary = document.getElementById("answer-summary");
+   const percentage = (score / questions.length) * 100;
+
+   resultContainer.innerText = `Du bist ${percentage.toFixed(2)}% Fan von Myle!`;
+
+   // Zusammenfassung der Antworten
+   answerSummary.innerHTML = '<h3>Antwortzusammenfassung:</h3>';
+   questions.forEach((q, index) => {
+       const userAnswer = userAnswers[index] || "Nicht beantwortet";
+       const correctAnswer = q.answer;
+
+       answerSummary.innerHTML += `<p><strong>Frage ${index + 1}:</strong> ${q.question}<br>
+       <strong>Deine Antwort:</strong> ${userAnswer}<br>
+       <strong>Korrekte Antwort:</strong> ${correctAnswer}</p>`;
+   });
+
+   // Neu starten Button anzeigen
+   document.getElementById("restart-button").style.display = "block";
+
+   // Quiz-Ende, Navigation ausblenden
+   document.querySelector(".navigation-buttons").style.display = "none";
+   document.getElementById("quiz-content").innerHTML = '';
+}
+
+// Funktion zum Neustarten des Quiz
+function restartQuiz() {
+   currentQuestionIndex = 0;
+   score = 0;
+   userAnswers.length = 0; // Array zurücksetzen
+   document.getElementById("result").innerText = '';
+   document.getElementById("answer-summary").innerHTML = '';
+   document.getElementById("restart-button").style.display = "none"; // Neustart Button ausblenden
+   loadQuestion(currentQuestionIndex); // Erste Frage laden
+}
+
+// Initiale Frage laden
+loadQuestion(currentQuestionIndex);
 </script>
+
+<!-- Neustart Button -->
+<button id="restart-button" style="display:none;" onclick="restartQuiz()">Quiz neu starten</button>
 
 </body>
 </html>
