@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -54,13 +53,14 @@
         }    
 
         .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
         }
 
         .gallery img {
             width: 100%;
+            max-width: 600px;
             border-radius: 10px;
         }
 
@@ -78,35 +78,14 @@
 
 <div class="content">
    <h3>Bilder Galerie</h3>
-   <div class="gallery" id="bilder-gallery"></div>
+   <div class="gallery">
+      <img src="https://raw.githubusercontent.com/DEIN_USERNAME/myle-fan/main/Bilder/myle1.png" alt="Bild von Myle">
+   </div>
 </div>
 
 <footer>
    &copy; 2024 Marvin's Fanpage für Myle. Alle Rechte vorbehalten.
 </footer>
-
-<script>
-    // Hier die URLs zu den Bildern im GitHub-Ordner "myle-fan/bilder" einfügen
-    const bilderUrls = [
-        'https://raw.githubusercontent.com/ascaldosa/myle-fan/main/Bilder/myle1.png',
-        'https://raw.githubusercontent.com/ascaldosa/myle-fan/main/bilder/bild2.jpg',
-        'https://raw.githubusercontent.com/ascaldosa/myle-fan/main/bilder/bild3.jpg',
-        // Füge hier weitere Bild-URLs hinzu
-    ];
-
-    function loadBilder() {
-        const gallery = document.getElementById('bilder-gallery');
-        
-        bilderUrls.forEach(url => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = 'Bild von Myle';
-            gallery.appendChild(img);
-        });
-    }
-
-    loadBilder();
-</script>
 
 </body>
 </html>
