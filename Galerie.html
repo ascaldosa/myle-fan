@@ -59,15 +59,43 @@
             padding: 10px; 
         }
 
-        /* Unsichtbares Dropdown-Menü für den YouTube-Player */
+        /* Dropdown-Menü-Stile */
+        .dropdown {
+            position: absolute;
+            top: 20px; 
+            left: 20px; 
+        }
+
         .dropdown-content {
             display: none; /* Standardmäßig ausblenden */
+            position: absolute;
+            background-color: rgba(30,30,30,0.9); /* Dunkelgrau mit Transparenz */
+            min-width: 150px; 
+            z-index: 1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block; /* Anzeigen beim Hover */
         }
 
         iframe {
             width: 300px; 
             height: auto;
         }
+
+        .menu-button {
+           padding: 15px;
+           font-size: 1em;
+           background-color: black; /* Hintergrundfarbe schwarz */
+           color: #ffffff;
+           border-radius: 8px;
+           cursor: pointer;
+           margin-top: 10px;
+           transition: background-color 0.3s ease;
+           border:none
+       }
+       .menu-button:hover { background-color:#666;} /* Hover-Effekt für den Menü-Button */
+
     </style>
 </head>
 <body>
@@ -89,10 +117,16 @@
     <!-- Play/Pause Button -->
     <button class="nav-button" id="playPauseButton">Musik Play/Pause</button>
 
-    <!-- Unsichtbares Dropdown-Menü für den YouTube-Player -->
-    <div class="dropdown-content">
-        <iframe id="youtubePlayer" src="https://www.youtube.com/embed/ZVBvmFx4Yk0?enablejsapi=1&autoplay=1&loop=1&playlist=ZVBvmFx4Yk0" frameborder="0" allowfullscreen></iframe>
+    <!-- Dropdown-Menü für den YouTube-Player -->
+    <div class="dropdown">
+        <button class="menu-button">Menü</button>
+        <div class="dropdown-content">
+           <a href="index.html" style="color:white; text-decoration:none;">Zurück zum Menü</a>
+       </div>
     </div>
+
+    <!-- Unsichtbares Dropdown-Menü für den YouTube-Player -->
+    <iframe id="youtubePlayer" src="https://www.youtube.com/embed/ZVBvmFx4Yk0?enablejsapi=1&autoplay=1&loop=1&playlist=ZVBvmFx4Yk0" frameborder="0" allowfullscreen style="display:none;"></iframe>
 </div>
 
 <footer>
@@ -115,6 +149,7 @@
     // Spieler bereit
     function onPlayerReady(event) {
       // Spieler ist bereit
+      player.playVideo(); // Video automatisch starten
     }
 
     // Array mit Bild-URLs
