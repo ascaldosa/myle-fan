@@ -76,73 +76,92 @@
 
         /* Hinweis-Stil */
         .info-message {
-          background-color: #444; 
-          color: #ffcc00; 
-          padding: 10px; 
-          border-radius: 5px; 
-          margin-bottom: 20px; 
-          font-size: 1em; 
-          text-align: center; 
+          background-color:#444; 
+          color:#ffcc00; 
+          padding :10px; 
+          border-radius :5px; 
+          margin-bottom :20px; 
+          font-size :1em; 
+          text-align :center; 
         }
 
         /* Dropdown Styles */
         .dropdown {
-            position: relative; 
-            display: inline-block; 
-            margin-top: 20px; 
+          position :relative; 
+          display:inline-block; 
+          margin-top :20px; 
         }
 
         .menu-button {
-            padding: 10px; 
-            background-color: #c8102e; 
-            color: white; 
-            border-radius: 5px; 
-            border: none; 
+          padding :10px; 
+          background-color :#c8102e; 
+          color:white ; 
+          border-radius :5px; 
+          border:none ; 
+          cursor:pointer ;
         }
 
         .dropdown-content {
-            display: none; 
-            position: absolute; 
-            background-color: #1e1e1e; 
-            min-width: 160px; 
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.2); 
-            z-index: 1; 
+          display:none; 
+          position:absolute; 
+          background-color:#1e1e1e; 
+          min-width :160px; 
+          box-shadow :0px 8px 16px rgba(0,0,0,0.2); 
+          z-index :1; 
         }
 
         .dropdown-content a {
-          color: white; 
-          padding: 12px 16px; 
-          text-decoration: none; 
-          display: block; 
-          transition: background-color .3s ease; 
+          color:white ; 
+          padding :12px 16px ;  
+          text-decoration:none ;  
+          display:block ;  
+          transition :background-color .3s ease ;  
         }
 
         .dropdown-content a:hover {
-          background-color: #575757; 
+          background-color:#575757 ;  
         }
 
         .dropdown:hover .dropdown-content {
-          display: block; 
+          display:block ;  
         }
 
-        /* Wincent Weiß Quiz Button */
-        .wincent-button {
-          background-color: #007bff; /* Blau */
-          padding: 15px;
-          border-radius: 8px;
-          color:white ;
-          border:none ;
-          cursor:pointer ;
-          font-size :1em ;
-          transition :background-color .3s ease ;
-          display:inline-block ;
-          margin-top :20px ;
-      }
+       /* Modal Styles */
+       .modal {
+         display:none; /* Hidden by default */
+         position:absolute; /* Stay in place */
+         z-index:1000; /* Sit on top */
+         left:50%; /* Center the modal */
+         top:50%; /* Center the modal */
+         transform: translate(-50%, -50%); /* Center the modal */
+         width:auto; /* Auto width */
+         height:auto; /* Auto height */
+         overflow:auto; /* Enable scroll if needed */
+         background-color:#2e2e2e; /* Dunkler Hintergrund für den Modal */
+         border-radius:12px; /* Abrundung der Ecken */
+         padding:20px; /* Padding für das Modal */
+         box-shadow: 0 4px 8px rgba(0,0,0,0.5); /* Schatten für das Modal */
+       }
 
-      .wincent-button:hover {
-          background-color :#0056b3 ; /* Dunkleres Blau */
-      }
-    </style>
+       .modal-content {
+         color:#fff; /* Weiße Schrift */
+       }
+
+       .close {
+         color:#c8102e; /* Rote Farbe für das Schließen-Symbol */
+         float:right; /* Float to the right */
+         font-size:"32px"; /* Größeres X-Symbol */
+         font-weight:"bold"; /* Bold */
+       }
+
+       .close:hover,
+       .close:focus {
+         color:"#ffcc00"; /* Gelb beim Hover */
+         text-decoration:"none"; /* No underline */
+         cursor:"pointer"; /* Pointer/hand icon */
+       }
+       
+      </style>
 </head>
 <body>
 
@@ -178,29 +197,38 @@
     <button class="wincent-button" onclick="window.location.href='Quiz-wincent.html'">Zum Wincent Weiß Quiz</button>
 </div>
 
+<!-- Modal für die Erklärung -->
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeInfo()">&times;</span>
+      <h2>Wissenswertes!</h2>
+      <p>Diese Frage bezieht sich darauf, in welchem Jahr Myle als Vorgruppe bei Konzerten aufgetreten ist. Support-Acts sind Künstler oder Bands, die vor einem Hauptact spielen und oft weniger bekannt sind. Diese Auftritte helfen ihnen, ihre Musik einem größeren Publikum vorzustellen und Bühnenerfahrung zu sammeln.</p>
+      <p>Wir hoffen, dass dir dieses Quiz Spaß macht! Viel Glück!</p>
+    </div>
+</div>
+
 <script>
 // Liste der Fragen und Antworten mit Auswahlmöglichkeiten
 const questions = [
     { question:"In welchem Jahr veröffentlichte Myle seine erste Single 'Late Night High'?", options:["2019", "2020", "2021"], answer:"2020" },
     { question:"Wie viele Alben hat Myle bis jetzt veröffentlicht?", options:["1", "2", "3"], answer:"1" }, // Stand 2024
-    { question:"Wie heißt Myles zweites Album?", options:["Songs to Scream in the Car","Overkill","Late Night Vibes"], answer:"Songs to Scream in the Car" }, // veröffentlicht in 2023
-    { question:"Welcher Song gilt als Myles bekanntester Hit?", options:["Hold Me", "Mutual", "Sad Boy Summer"], answer:"Hold Me" },
+    { question:"Wie heißt Myles erstes Album?", options:["Songs to Scream in the Car","Overkill","Late Night Vibes"], answer:"Songs to Scream in the Car" }, // veröffentlicht in 2023
+    { question:"Welcher Song gilt als Myles bekanntester Hit?", options:["Not Ready", "Hold Me", "Sad Boy Summer"], answer:"Not Ready" },
     { question:"In welcher Stadt wurde Myle geboren?", options:["Ravensburg", "Berlin", "München"], answer:"Ravensburg" },
     { question:"Welches Musikgenre beschreibt Myles Stil am besten?", options:["Pop", "Rock", "Hip-Hop"], answer:"Pop" },
-    { question:"In welchem Jahr begann Myle mit Support-Acts aufzutreten?", options:["2020", "2021", "2022"], answer:"2021" },
+    { question:`In welchem Jahr begann Myle mit Support-Acts aufzutreten? <button onclick='showInfo()' style='font-size:.8em;'>Info</button>`, options:["2020", "2021", "2022"], answer:"2021" }, // Erklärung hinzugefügt
     { question:"Wie viele Songs hat Myle insgesamt veröffentlicht?", options:["22","23","25"], answer:"23" }, // Stand 2024
     { question:"Welcher Song von Myle ist als Live-Version bekannt?", options:["Overkill","Mutual","Sad Boy Summer"], answer:"Overkill" },
-    { question:"Welcher Song ist der aktuellste von Myle?", options:["Lie You Love Me","Run Away","Following You"], answer:"Lie You Love Me" },
+    { question:"Welcher Song ist der aktuellste von Myle?", options:["Who's in Your Head?","Run Away","Following You"], answer:"Who's in Your Head?" },
     { question:"Welches Instrument spielt Myle hauptsächlich?", options:["Gitarre","Klavier","Schlagzeug"], answer:"Gitarre" },
-    { question:"Mit welchem Künstler hat Myle einen Song veröffentlicht?", options:["Lukas","Tom","Max"], answer:"Lukas" },
-    { question:"Wie lautet Myles Künstlername?", options:["Milo","Miles","Myle"], answer:"Myle" },
+    { question:"Wie heißt Myle mit bürgerlichem Namen?", options:["Milo Hoelz", "Myle Hölz", "Milo"], answer:"Milo Hoelz"}, // Aktualisierte Frage
+    { question:"In welchem Jahr wurde Myle geboren?", options:["1999","2000","2001"], answer:"2000"}, // Neue Frage
     { question:"Wie heißt die Debütsingle von Myle?", options:["Hold Me","Late Night High","Run Away"], answer:"Late Night High" },
-    { question:"Welcher Song wurde im Jahr 2023 veröffentlicht?", options:["Patience","Love Sucks","Run Away"], answer:"Run Away" },
-    { question:"Welches Label unterstützt Myle bei seinen Veröffentlichungen?", options:["Independent","Sony","Warner"], answer:"Independent" },
-    { question:"Welches Instrument dominiert in 'Mutual'?", options:["Gitarre","Synthesizer","Schlagzeug"], answer:"Gitarre" },
-    { question:"In welchem Land ist Myle aufgewachsen?", options:["Deutschland","Österreich","Schweiz"], answer:"Deutschland" },
-    { question:"Welche Farbe hat das Cover von Myles Album 'Overkill'?", options:["Schwarz","Rot","Blau"], answer:"Rot" },
-    { question:"Welcher Song handelt von einer Trennung?", options:["Love Sucks","Sad Boy Summer","Overkill"], answer:"Love Sucks" }
+    { question:"'Love Sucks' handelt von welcher Phase in einer Beziehung?", options:["Kennenlernphase","Trennung","Freundschaft"], answer:"Kennenlernphase" },
+    { question:"'Patience', 'Run Away' und 'Love Sucks' wurden in welchem Jahr veröffentlicht?", options:["2022","2023","2024"], answer:"2023"}, // Stand 2024
+    { question:"Welches Label unterstützt Myle bei seinen Veröffentlichungen?", options:["Kein label","Sony","Warner"], answer:"Kein label"}, // Frage aktualisiert
+    { question:"Welches Instrument dominiert in 'Mutual'?", options:["Gitarre","Synthesizer","Schlagzeug"], answer:"Gitarre"},
+    { question:"In welchem Land ist Myle aufgewachsen?", options:["Deutschland","Österreich","Schweiz"], answer:"Deutschland"},
 ];
 
 let currentQuestionIndex = 0;
@@ -208,12 +236,12 @@ let score = 0;
 const userAnswers = [];
 
 function loadQuestion(index) {
-    const questionContainer = document.getElementById("quiz-content");
-    questionContainer.innerHTML = '';
+   const questionContainer = document.getElementById("quiz-content");
+   questionContainer.innerHTML = '';
 
-    const questionElement = document.createElement("div");
-    questionElement.className = "question";
-    
+   const questionElement = document.createElement("div");
+   questionElement.className = "question";
+   
    // Frage und Optionen hinzufügen
    questionElement.innerHTML = `<p>${index + 1}. ${questions[index].question}</p>`;
    questions[index].options.forEach(option => {
@@ -293,6 +321,18 @@ function restartQuiz() {
    document.getElementById("restart-button").style.display = "none"; // Neustart Button ausblenden
    document.querySelector(".navigation-buttons").style.display = "flex"; // Navigation wieder anzeigen
    loadQuestion(currentQuestionIndex); // Erste Frage laden
+}
+
+// Funktion zur Anzeige der Erklärung für Aufgabe 7
+function showInfo() {
+   const modal = document.getElementById('infoModal');
+   modal.style.display = 'block';
+}
+
+// Funktion zum Schließen des Modals
+function closeInfo() {
+   const modal = document.getElementById('infoModal');
+   modal.style.display = 'none';
 }
 
 // Initiale Frage laden
