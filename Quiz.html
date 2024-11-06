@@ -74,6 +74,17 @@
             color: #ffffff;
         }
 
+        /* Hinweis-Stil */
+        .info-message {
+          background-color: #444; 
+          color: #ffcc00; 
+          padding: 10px; 
+          border-radius: 5px; 
+          margin-bottom: 20px; 
+          font-size: 1em; 
+          text-align: center; 
+        }
+
         /* Dropdown Styles */
         .dropdown {
             position: relative; 
@@ -113,6 +124,24 @@
         .dropdown:hover .dropdown-content {
           display: block; 
         }
+
+        /* Wincent Weiß Quiz Button */
+        .wincent-button {
+          background-color: #007bff; /* Blau */
+          padding: 15px;
+          border-radius: 8px;
+          color:white ;
+          border:none ;
+          cursor:pointer ;
+          font-size :1em ;
+          transition :background-color .3s ease ;
+          display:inline-block ;
+          margin-top :20px ;
+      }
+
+      .wincent-button:hover {
+          background-color :#0056b3 ; /* Dunkleres Blau */
+      }
     </style>
 </head>
 <body>
@@ -131,6 +160,9 @@
 </div>
 
 <div class="quiz-container">
+    <div class="info-message">
+      Hinweis: Nicht alle Antworten müssen unbedingt korrekt sein, da an den Informationen noch gearbeitet wird.
+    </div>
     <div id="quiz-content">
         <!-- Fragen werden hier geladen -->
     </div>
@@ -141,6 +173,9 @@
     <div class="result" id="result"></div>
     <div class="answer-summary" id="answer-summary"></div>
     <button id="restart-button" style="display:none;" onclick="restartQuiz()">Quiz neu starten</button> <!-- Neu starten Button -->
+    
+    <!-- Wincent Weiß Quiz Button -->
+    <button class="wincent-button" onclick="window.location.href='wincent-quiz.html'">Zum Wincent Weiß Quiz</button>
 </div>
 
 <script>
@@ -148,11 +183,11 @@
 const questions = [
     { question:"In welchem Jahr veröffentlichte Myle seine erste Single 'Late Night High'?", options:["2019", "2020", "2021"], answer:"2020" },
     { question:"Wie viele Alben hat Myle bis jetzt veröffentlicht?", options:["1", "2", "3"], answer:"1" }, // Stand 2024
+    { question:"Wie heißt Myles zweites Album?", options:["Songs to Scream in the Car","Overkill","Late Night Vibes"], answer:"Songs to Scream in the Car" }, // veröffentlicht in 2023
     { question:"Welcher Song gilt als Myles bekanntester Hit?", options:["Hold Me", "Mutual", "Sad Boy Summer"], answer:"Hold Me" },
     { question:"In welcher Stadt wurde Myle geboren?", options:["Ravensburg", "Berlin", "München"], answer:"Ravensburg" },
     { question:"Welches Musikgenre beschreibt Myles Stil am besten?", options:["Pop", "Rock", "Hip-Hop"], answer:"Pop" },
     { question:"In welchem Jahr begann Myle mit Support-Acts aufzutreten?", options:["2020", "2021", "2022"], answer:"2021" },
-    { question:"Wie heißt Myles zweites Album?", options:["Overkill","Songs to Scream in the Car","Late Night Vibes"], answer:"Songs to Scream in the Car" }, // veröffentlicht in 2023
     { question:"Wie viele Songs hat Myle insgesamt veröffentlicht?", options:["22","23","25"], answer:"23" }, // Stand 2024
     { question:"Welcher Song von Myle ist als Live-Version bekannt?", options:["Overkill","Mutual","Sad Boy Summer"], answer:"Overkill" },
     { question:"Welcher Song ist der aktuellste von Myle?", options:["Lie You Love Me","Run Away","Following You"], answer:"Lie You Love Me" },
