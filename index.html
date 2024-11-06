@@ -199,7 +199,12 @@
 // Funktion zur Anzeige des Begrüßungsmodals
 function showWelcome() {
     const modal = document.getElementById('welcomeModal');
-    modal.classList.add('show'); // Füge die Klasse 'show' hinzu
+    
+    // Überprüfen, ob die Willkommensnachricht bereits angezeigt wurde
+    if (!localStorage.getItem('welcomeShown')) {
+        modal.classList.add('show'); // Füge die Klasse 'show' hinzu
+        localStorage.setItem('welcomeShown', 'true'); // Setze das Flag im localStorage
+    }
 }
 
 // Funktion zum Schließen des Begrüßungsmodals
