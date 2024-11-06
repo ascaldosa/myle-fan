@@ -96,6 +96,12 @@
        }
        .menu-button:hover { background-color:#666;} /* Hover-Effekt für den Menü-Button */
 
+       .info-text {
+           color: #cccccc; /* Helle Schriftfarbe für die Info-Anzeige */
+           font-size: 0.9em; /* Kleinere Schriftgröße für die Info-Anzeige */
+           margin-top: 10px; /* Abstand nach oben hinzufügen */
+       }
+
     </style>
 </head>
 <body>
@@ -116,6 +122,12 @@
 
     <!-- Play/Pause Button -->
     <button class="nav-button" id="playPauseButton">Musik Play/Pause</button>
+    
+    <!-- Mute/Unmute Button -->
+    <button class="nav-button" id="muteUnmuteButton">Stumm/Unsummen</button>
+
+    <!-- Info Text -->
+    <div class="info-text">Hinweis: Wenn Sie nichts hören, drücken Sie "Entmute" zweimal.</div>
 
     <!-- Dropdown-Menü für den YouTube-Player -->
     <div class="dropdown">
@@ -142,13 +154,15 @@
       player = new YT.Player('youtubePlayer', {
           events: {
               'onReady': onPlayerReady
+          },
+          playerVars:{
+              'mute': true // Video standardmäßig stumm schalten
           }
       });
     }
 
     // Spieler bereit
     function onPlayerReady(event) {
-      // Spieler ist bereit
       player.playVideo(); // Video automatisch starten
     }
 
@@ -190,6 +204,22 @@
           playPauseButton.innerText = 'Musik Pause'; // Button Text ändern
       }
       isPlaying = !isPlaying; // Toggle state
+    });
+
+    // Mute/Unmute Button Funktionalität
+    const muteUnmuteButton = document.getElementById('muteUnmuteButton');
+    
+    let isMuted = true;
+
+    muteUnmuteButton.addEventListener('click', function() {
+      if (isMuted) {
+          player.unMute(); // Video entstummen
+          muteUnmuteButton.innerText = 'Stumm'; // Button Text ändern
+      } else {
+          player.mute(); // Video stumm schalten
+          muteUnmuteButton.innerText = 'Unsummen'; // Button Text ändern
+      }
+      isMuted = !isMuted; // Toggle state
     });
 </script>
 
