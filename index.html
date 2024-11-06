@@ -9,11 +9,13 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212;
+            background-image: url('https://www.hellwegradio.de/externalimages/?source=jpg412/mylenot-ready.jpg&resize=1200x1200&dt=202203221736310'); /* Hintergrundbild */
+            background-size: cover; /* Bild deckt den gesamten Hintergrund ab */
+            background-position: center; /* Bild wird zentriert */
             color: #ffffff;
         }
         header {
-            background-color: #c8102e; /* Dunkelrot */
+            background-color: rgba(200, 16, 46, 0.7); /* Dunkelrot mit Transparenz */
             padding: 20px;
             text-align: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
@@ -26,7 +28,7 @@
         nav {
             display: flex;
             justify-content: center;
-            background-color: #282828; /* Dunkelgrau */
+            background-color: rgba(40, 40, 40, 0.7); /* Dunkelgrau mit Transparenz */
         }
         .dropdown {
             position: relative;
@@ -66,10 +68,7 @@
             display: block;
         }
         .hero {
-            background-image: url('https://example.com/hero-image.jpg'); /* Ersetze durch ein tatsächliches Bild */
-            background-size: cover;
-            background-position: center;
-            height: 400px;
+            height: 400px; /* Höhe des Hero-Bereichs */
             display: flex;
             align-items: center;
             justify-content: center;
