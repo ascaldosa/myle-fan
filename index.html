@@ -201,9 +201,9 @@ function showWelcome() {
     const modal = document.getElementById('welcomeModal');
     
     // Überprüfen, ob die Willkommensnachricht bereits angezeigt wurde
-    if (!localStorage.getItem('welcomeShown')) {
+    if (!sessionStorage.getItem('welcomeShown')) {
         modal.classList.add('show'); // Füge die Klasse 'show' hinzu
-        localStorage.setItem('welcomeShown', 'true'); // Setze das Flag im localStorage
+        sessionStorage.setItem('welcomeShown', 'true'); // Setze das Flag im sessionStorage
     }
 }
 
