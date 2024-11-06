@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galerie - Myle Fanpage</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212; /* Dunkler Hintergrund */
+            color: #ffffff;
+            position: relative; /* Für das Positionieren des Iframes */
+        }
+        header {
+            background-color: rgba(200, 16, 46, 0.8); /* Dunkelrot mit Transparenz */
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+        .gallery {
+            display: flex;
+            flex-direction: column; /* Bild und Navigation untereinander */
+            align-items: center; /* Zentriert die Galerie */
+            margin-top: 20px; /* Abstand nach oben hinzufügen */
+        }
+        .gallery-item {
+            margin: 10px; /* Abstand zwischen den Bildern */
+            border-radius: 10px; /* Abgerundete Ecken */
+            overflow: hidden; /* Versteckt Überlauf */
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.5); /* Schatten für die Bilder */
+        }
+        .gallery-item img {
+            width: 300px; /* Feste Breite für die Bilder */
+            height: auto; /* Automatische Höhe für das Seitenverhältnis */
+            display: block; /* Block-Element für bessere Kontrolle */
+        }
+        .nav-buttons {
+            margin-top: 20px; /* Abstand nach oben hinzufügen */
+        }
+        .nav-button {
+            background-color: #c8102e; /* Dunkelrot */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        footer {
+            background-color: #282828; /* Dunkelgrau */
+            color: #ffffff; 
+            text-align: center; 
+            padding: 10px; 
+        }
+
+        /* Unsichtbares Dropdown-Menü für den YouTube-Player */
+        .dropdown-content {
+            display: none; /* Standardmäßig ausblenden */
+        }
+
+        iframe {
+            width: 300px; 
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+   <h1>Galerie von Myle</h1>
+</header>
+
+<div class="gallery">
+    <div class="gallery-item">
+        <img id="galleryImage" src="https://cdns-images.dzcdn.net/images/artist/5e08f6669d720f59bc53c5f6f6ee3647/1900x1900-000000-80-0-0.jpg" alt="Myle Bild">
+    </div>
+
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="prevImage()">Vorheriges Bild</button>
+        <button class="nav-button" onclick="nextImage()">Nächstes Bild</button>
+    </div>
+
+    <!-- Play/Pause Button -->
+    <button class="nav-button" id="playPauseButton">Musik Play/Pause</button>
+
+    <!-- Unsichtbares Dropdown-Menü für den YouTube-Player -->
+    <div class="dropdown-content">
+        <iframe id="youtubePlayer" src="https://www.youtube.com/embed/ZVBvmFx4Yk0?enablejsapi=1&autoplay=1&loop=1&playlist=ZVBvmFx4Yk0" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>
+
+<footer>
+   &copy;2024 Marvin's Fanpage für Myle. Alle Rechte vorbehalten.
+</footer>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+    let player;
+
+    // YouTube IFrame API bereit
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('youtubePlayer', {
+          events: {
+              'onReady': onPlayerReady
+          }
+      });
+    }
+
+    // Spieler bereit
+    function onPlayerReady(event) {
+      // Spieler ist bereit
+    }
+
+    // Array mit Bild-URLs
+    const images = [
+        "https://cdns-images.dzcdn.net/images/artist/5e08f6669d720f59bc53c5f6f6ee3647/1900x1900-000000-80-0-0.jpg",
+        "https://www.imwizemann.de/_upl/de/_p-bands/myle_pressefoto_03_by_dario_suppan_1_655644af55b95-1.webp",
+        "https://szene-hamburg.com/wp-content/uploads/2024/10/stn-gxfi98thk3wnsxoiy1g4jmk1nrvwfjm04eqtxvvx-1545x869.jpeg"
+    ];
+    
+    let currentIndex = 0;
+
+    function updateImage() {
+        const galleryImage = document.getElementById('galleryImage');
+        galleryImage.src = images[currentIndex];
+    }
+
+    function nextImage() {
+        currentIndex = (currentIndex + 1) % images.length; // Nächster Index (loop back to start)
+        updateImage();
+    }
+
+    function prevImage() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length; // Vorheriger Index (loop back to end)
+        updateImage();
+    }
+
+    // Play/Pause Button Funktionalität
+    const playPauseButton = document.getElementById('playPauseButton');
+
+    let isPlaying = true;
+
+    playPauseButton.addEventListener('click', function() {
+      if (isPlaying) {
+          player.pauseVideo(); // Video pausieren
+          playPauseButton.innerText = 'Musik Play'; // Button Text ändern
+      } else {
+          player.playVideo(); // Video starten
+          playPauseButton.innerText = 'Musik Pause'; // Button Text ändern
+      }
+      isPlaying = !isPlaying; // Toggle state
+    });
+</script>
+
+</body>
+</html>
