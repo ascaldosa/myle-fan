@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum - Myle Fanpage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: red;
+        }
+        input, textarea {
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid red;
+            border-radius: 5px;
+            width: 250px;
+        }
+        button {
+            padding: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkred;
+        }
+        #message {
+            margin-top: 20px;
+            color: red; /* Fehlernachrichten rot */
+        }
+        #commentsSection {
+            margin-top: 20px;
+            width: 100%;
+        }
+        .comment {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid gray; /* Grauer Rahmen */
+        }
+        .comment button {
+            background-color: transparent; /* Transparent für Bearbeiten und Löschen */
+            color: red; /* Rote Schrift für die Buttons */
+            border: none; /* Kein Rand */
+            cursor: pointer; /* Zeiger-Cursor */
+        }
+        /* Popup Styles */
+        .modal {
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background-color: rgba(0, 0, 0, 0.8); 
+        }
+        .modal-content {
+            background-color: black; 
+            padding: 20px; 
+            border-radius: 10px; 
+        }
+        .replySection {
+            display:none; /* Antworten standardmäßig ausblenden */
+            margin-top: 10px; 
+        }
+        /* Dropdown Styles */
+        .dropdown {
+          position: relative;
+          display: inline-block;
+          margin-top: 20px;
+          width: auto; /* Breite anpassen */
+          text-align:center; /* Text zentrieren */
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: black;
+          min-width: 160px;
+          box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+          z-index: 1;
+        }
+
+        .dropdown-content a {
+          color: white;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+
+        .dropdown-content a:hover {
+          background-color: darkred; /* Hover-Effekt für Links */
+        }
+
+        .dropdown:hover .dropdown-content {
+          display:block; /* Dropdown anzeigen bei Hover */
+        }
+    </style>
+</head>
+<body>
+
+<h1>Forum - Myle Fanpage</h1>
+
+<!-- Kommentar Eingabe -->
+<div id="commentSection" style="display:none;">
+    <textarea id="commentInput" placeholder="Schreibe einen Kommentar..." rows="4" required></textarea>
+    <button id="submitCommentBtn">Kommentar absenden</button>
+</div>
+
+<div id="message"></div>
+
+<!-- Kommentare Abschnitt -->
+<div id="commentsSection" style="display:none;">
+    <h2>Kommentare:</h2>
+</div>
+
+<!-- Modal für das Login -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+      <h2>Anmelden</h2>
+      <input type="text" id="loginUsername" placeholder="Benutzername" required>
+      <input type="password" id="loginPassword" placeholder="Passwort" required>
+      <button id="loginSubmitBtn">Einloggen</button>
+      <div id="loginMessage"></div> <!-- Nachricht für Login -->
+      <p id="noAccountMessage" style="color:white;">Wenn du kein Konto hast, gehe auf das Menü und erstelle einen Account.</p> <!-- Hinweis für neue Benutzer -->
+
+      <!-- Dropdown Menu im Modal -->
+      <div class="dropdown">
+          <button>Menu</button>
+          <div class="dropdown-content">
+              <a href="index.html">Home</a>
+              <a href="login.html">Login</a>
+          </div>
+      </div>
+
+    </div>
+</div>
+
+<script type="module">
+// Importiere die benötigten Funktionen aus den SDKs
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+// Deine Firebase-Konfiguration
+const firebaseConfig = {
+    apiKey: "AIzaSyC63y4s1JW_zl2FfhPwkrIM2DzcW9LuLjI",
+    authDomain: "myle-fanpage-517ce.firebaseapp.com",
+    databaseURL: "https://myle-fanpage-517ce-default-rtdb.firebaseio.com",
+    projectId: "myle-fanpage-517ce",
+    storageBucket: "myle-fanpage-517ce.firebasestorage.app",
+    messagingSenderId: "367391290237",
+    appId: "1:367391290237:web:9715b52f0bae093a495214",
+    measurementId: "G-C968R9VC9H"
+};
+
+// Firebase initialisieren
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+// Funktion zur Anzeige von Nachrichten
+function showMessage(message, isError) {
+    const messageDiv = document.getElementById('message');
+    messageDiv.textContent = message;
+    messageDiv.style.color = isError ? 'red' : 'green'; // Fehlernachricht rot, Erfolg grün
+}
+
+// Funktion zum Einloggen
+document.getElementById('loginSubmitBtn').onclick = function() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    
+    // Eingabefelder überprüfen
+    if (!username || !password) {
+        showMessage("Bitte fülle alle Felder aus!", true);
+        return;
+    }
+
+    // Benutzerdaten abrufen und überprüfen
+    const dbRef = ref(database);
+    get(child(dbRef, 'users')).then((snapshot) => {
+        if (snapshot.exists()) {
+            let userFound = false;
+
+            snapshot.forEach((childSnapshot) => {
+                const userData = childSnapshot.val();
+                if (userData.username === username && userData.password === password) {
+                    userFound = true; // Benutzer gefunden
+                    localStorage.setItem('username', username); // Speichere den Benutzernamen im Local Storage
+                    showMessage("Erfolgreich eingeloggt!", false);
+                    document.getElementById('loginUsername').value = '';
+                    document.getElementById('loginPassword').value = '';
+                    document.getElementById('loginModal').style.display = 'none'; // Schließe das Modal nach erfolgreichem Login
+                    loadComments(); // Lade Kommentare nach dem Einloggen
+                    document.getElementById('commentSection').style.display = 'block'; // Zeige Kommentarbereich an
+                    document.getElementById('commentsSection').style.display = 'block'; // Zeige Kommentare an
+                }
+            });
+
+            if (!userFound) {
+                showMessage("Ungültige Anmeldedaten!", true);
+                document.getElementById('commentSection').style.display = 'none'; // Verstecke Kommentarbereich bei ungültigen Daten
+                document.getElementById('commentsSection').style.display = 'none'; // Verstecke Kommentare bei ungültigen Daten
+                document.getElementById('noAccountMessage').style.display = 'block'; // Zeige Hinweis für neue Benutzer an
+            } else {
+                document.getElementById('noAccountMessage').style.display = 'none'; // Verstecke Hinweis für neue Benutzer
+            }
+        } else {
+            showMessage("Keine Benutzerdaten gefunden!", true);
+        }
+    }).catch((error) => {
+        console.error("Fehler beim Abrufen der Daten:", error);
+        showMessage("Ein Fehler ist aufgetreten!", true);
+    });
+};
+
+// Funktion zum Hinzufügen eines Kommentars
+document.getElementById('submitCommentBtn').onclick = function() {
+    const commentInput = document.getElementById('commentInput').value.trim();
+    
+    // Eingabefelder überprüfen
+    if (!commentInput) {
+        showMessage("Bitte schreibe einen Kommentar!", true);
+        return;
+    }
+
+    const username = localStorage.getItem('username'); // Benutzername aus dem Local Storage abrufen
+
+    if (!username) {
+        showMessage("Bitte melde dich an, um einen Kommentar zu schreiben.", true);
+        return; // Benutzer muss angemeldet sein
+    }
+
+    // Kommentar in der Datenbank speichern
+    const commentId = Date.now(); // Eindeutige ID basierend auf der aktuellen Zeit
+    set(ref(database, 'comments/' + commentId), {
+        username,
+        commentText: commentInput,
+        replies: [], // Initialisiere Antworten als leeres Array
+        timestamp: commentId // Zeitstempel für spätere Verwendung
+    }).then(() => {
+        showMessage("Kommentar erfolgreich hinzugefügt!", false);
+        document.getElementById('commentInput').value = ''; // Eingabefeld leeren
+        loadComments(); // Kommentare neu laden
+    }).catch((error) => {
+        console.error("Fehler beim Speichern des Kommentars:", error);
+        showMessage("Ein Fehler ist aufgetreten!", true);
+    });
+};
+
+// Funktion zum Laden der Kommentare
+function loadComments() {
+    const dbRef = ref(database);
+    
+    get(child(dbRef, 'comments')).then((snapshot) => {
+        const commentsSection = document.getElementById('commentsSection');
+        
+        // Vorhandene Kommentare löschen
+        commentsSection.innerHTML = '<h2>Kommentare:</h2>'; 
+
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const commentData = childSnapshot.val();
+                const commentDiv = document.createElement('div');
+                commentDiv.classList.add('comment');
+                commentDiv.innerHTML = `
+                    <strong>${commentData.username}</strong>: ${commentData.commentText}
+                    ${commentData.username === localStorage.getItem('username') ? `<button class="deleteCommentBtn" data-comment-id="${childSnapshot.key}">Löschen</button>` : ''}
+                    <button onclick="toggleReply('${childSnapshot.key}')">Antworten</button>
+                    <div class="replySection" id="reply-${childSnapshot.key}">
+                        <textarea placeholder="Schreibe eine Antwort..." rows="2"></textarea>
+                        <button onclick="submitReply('${childSnapshot.key}')">Antwort absenden</button>
+                        <div class="replies"></div>
+                    </div>
+                `;
+                commentsSection.appendChild(commentDiv);
+
+                // Antworten anzeigen (falls vorhanden)
+                if (commentData.replies && commentData.replies.length > 0) {
+                    const repliesDiv = commentDiv.querySelector('.replies');
+                    commentData.replies.forEach(reply => {
+                        const replyDiv = document.createElement('div');
+                        replyDiv.classList.add('comment');
+                        replyDiv.innerHTML = `<strong>${reply.username}</strong>: ${reply.text}`;
+                        repliesDiv.appendChild(replyDiv);
+                    });
+                }
+
+                commentsSection.style.display = 'block'; // Zeige den Kommentarbereich an.
+                
+            });
+        } else {
+            commentsSection.innerHTML += '<p>Keine Kommentare vorhanden.</p>';
+        }
+
+        
+    }).catch((error) => {
+        console.error("Fehler beim Abrufen der Kommentare:", error);
+    });
+}
+
+// Event Listener für das Löschen von Kommentaren
+document.addEventListener('click', function(event) {
+   if (event.target.classList.contains('deleteCommentBtn')) {
+       const commentId = event.target.getAttribute('data-comment-id');
+       deleteComment(commentId);
+   }
+});
+
+// Funktion zum Löschen eines Kommentars
+function deleteComment(commentId) {
+   if (confirm("Bist du sicher, dass du diesen Kommentar löschen möchtest?")) {
+       set(ref(database, 'comments/' + commentId), null)
+         .then(() => {
+             showMessage("Kommentar erfolgreich gelöscht!", false);
+             loadComments(); 
+         })
+         .catch((error) => {
+             console.error("Fehler beim Löschen des Kommentars:", error);
+             showMessage("Ein Fehler ist aufgetreten!", true);
+         });
+   }
+}
+
+// Funktion zum Antworten auf einen Kommentar
+function toggleReply(commentId) {
+   const replySection = document.getElementById(`reply-${commentId}`);
+   replySection.style.display = replySection.style.display === 'block' ? 'none' : 'block'; // Toggle Sichtbarkeit der Antwortsektion
+}
+
+// Funktion zum Absenden einer Antwort auf einen Kommentar
+function submitReply(commentId) {
+   const replyInput = document.querySelector(`#reply-${commentId} textarea`);
+   const replyText = replyInput.value.trim();
+
+   if (!replyText) {
+       showMessage("Bitte schreibe eine Antwort!", true);
+       return; 
+   }
+
+   const username = localStorage.getItem('username'); 
+   if (!username) return;
+
+   const replyData = { username, text: replyText };
+
+   set(ref(database, `comments/${commentId}/replies`), firebase.database.ServerValue.arrayUnion(replyData))
+       .then(() => {
+           showMessage("Antwort erfolgreich hinzugefügt!", false);
+           replyInput.value = ''; 
+           loadComments(); 
+       })
+       .catch((error) => {
+           console.error("Fehler beim Speichern der Antwort:", error);
+           showMessage("Ein Fehler ist aufgetreten!", true);
+       });
+}
+
+// Lade die Kommentare beim Laden der Seite und überprüfe den Anmeldestatus
+window.onload = function() {
+   const username = localStorage.getItem('username');
+   if (!username) { 
+       document.getElementById('commentSection').style.display = 'none'; 
+       document.getElementById('commentsSection').style.display = 'none'; 
+   } else {
+       loadComments(); 
+       document.getElementById('commentSection').style.display = 'block'; 
+       document.getElementById('commentsSection').style.display = 'block'; 
+   }
+};
+
+</script>
+
+</body>
+</html>
