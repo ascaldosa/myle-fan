@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login mit Firebase</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+</head>
+<body>
+    <h1>Login</h1>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Passwort" required>
+    <button id="loginBtn">Einloggen</button>
+    <button id="registerBtn">Registrieren</button>
+
+    <div id="message" style="margin-top: 20px;"></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC63y4s1JW_zl2FfhPwkrIM2DzcW9LuLj",
+            authDomain: "myle-fanpage-517ce.firebaseapp.com",
+            projectId: "myle-fanpage-517ce",
+            storageBucket: "myle-fanpage-517ce.appspot.com",
+            messagingSenderId: "367391290237",
+            appId: "DEINE_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        function showMessage(message) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.style.color = 'green';
+        }
+
+        function showError(message) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.style.color = 'red';
+        }
+
+        document.getElementById('loginBtn').onclick = function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    showMessage("Login erfolgreich!");
+                    // Weiterleitung zur index.html
+                    window.location.href = 'index.html';
+                })
+                .catch((error) => {
+                    showError(error.message);
+                });
+        };
+
+        document.getElementById('registerBtn').onclick = function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    showMessage("Registrierung erfolgreich!");
+                    // Weiterleitung zur index.html
+                    window.location.href = 'index.html';
+                })
+                .catch((error) => {
+                    showError(error.message);
+                });
+        };
+    </script>
+</body>
+</html>
