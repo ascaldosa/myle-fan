@@ -3,12 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Realtime Database Beispiel</title>
+    <title>Login mit Firebase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: red;
+        }
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid red;
+            border-radius: 5px;
+            width: 250px;
+        }
+        button {
+            padding: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkred;
+        }
+        #message {
+            margin-top: 20px;
+            color: red; /* Fehlernachrichten rot */
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Passwort" required>
+    <button id="loginBtn">Einloggen</button>
+
+    <div id="message"></div>
+
     <script type="module">
         // Importiere die benötigten Funktionen aus den SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
         // Deine Firebase-Konfiguration
         const firebaseConfig = {
@@ -24,42 +70,53 @@
 
         // Firebase initialisieren
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const database = getDatabase(app);
 
-        // Funktion zum Speichern von Benutzerdaten
-        function writeUserData(userId, name, email) {
-            set(ref(database, 'users/' + userId), {
-                username: name,
-                email: email
-            }).then(() => {
-                console.log("Daten erfolgreich gespeichert!");
-            }).catch((error) => {
-                console.error("Fehler beim Speichern der Daten:", error);
-            });
-        }
+        // Funktion zum Einloggen
+        document.getElementById('loginBtn').onclick = function() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            // Eingabefelder überprüfen
+            if (!email || !password) {
+                showMessage("Bitte fülle alle Felder aus!", true);
+                return;
+            }
 
-        // Funktion zum Abrufen von Benutzerdaten
-        function readUserData(userId) {
+            // Benutzerdaten abrufen und überprüfen
             const dbRef = ref(database);
-            get(child(dbRef, 'users/' + userId)).then((snapshot) => {
+            get(child(dbRef, 'users')).then((snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    console.log("Benutzerdaten:", data);
+                    let userFound = false;
+
+                    snapshot.forEach((childSnapshot) => {
+                        const userData = childSnapshot.val();
+                        if (userData.email === email && userData.password === password) {
+                            userFound = true; // Benutzer gefunden
+                            showMessage("Login erfolgreich!", false);
+                            // Hier kannst du zur nächsten Seite weiterleiten
+                            window.location.href = 'welcome.html'; // Stelle sicher, dass diese Datei existiert
+                        }
+                    });
+
+                    if (!userFound) {
+                        showMessage("Ungültige Anmeldedaten!", true);
+                    }
                 } else {
-                    console.log("Keine Daten gefunden.");
+                    showMessage("Keine Benutzerdaten gefunden!", true);
                 }
             }).catch((error) => {
                 console.error("Fehler beim Abrufen der Daten:", error);
+                showMessage("Ein Fehler ist aufgetreten!", true);
             });
-        }
+        };
 
-        // Beispielaufrufe
-        writeUserData('user1', 'Max Mustermann', 'max@example.com');
-        readUserData('user1');
+        // Funktion zur Anzeige von Nachrichten
+        function showMessage(message, isError) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.style.color = isError ? 'red' : 'green'; // Fehlernachricht rot, Erfolg grün
+        }
     </script>
-</head>
-<body>
-    <h1>Firebase Realtime Database Beispiel</h1>
 </body>
 </html>
