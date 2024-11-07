@@ -80,38 +80,42 @@
             display:none; /* Antworten standardmäßig ausblenden */
             margin-top: 10px; 
         }
-        /* Dropdown Styles */
-        .dropdown {
-          position: relative;
-          display: inline-block;
-          margin-top: 20px;
-          width: auto; /* Breite anpassen */
-          text-align:center; /* Text zentrieren */
-        }
 
-        .dropdown-content {
-          display: none;
-          position: absolute;
-          background-color: black;
-          min-width: 160px;
-          box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-          z-index: 1;
-        }
+        .verified-badge {
+             display:inline-flex;
+             justify-content:center;
+             align-items:center;
+             width: 16px; /* Breite des Kreises verkleinert */
+             height: 16px; /* Höhe des Kreises verkleinert */
+             background-color:#00A3E0; /* Blauer Hintergrund */
+             border-radius:50%; /* Runde Form */
+             position: relative; /* Position für die Zacken */
+         }
 
-        .dropdown-content a {
-          color: white;
-          padding: 12px 16px;
-          text-decoration: none;
-          display: block;
-        }
+         .verified-badge::before,
+         .verified-badge::after {
+             content:'';
+             position:absolute;
+             width:100%;
+             height:100%;
+             border-radius:50%;
+             border-width:.3em; /* Dicke der Zacken verkleinert */
+             border-style:none solid solid none; /* Zacken-Design */
+             border-color:#00A3E0 transparent transparent transparent; /* Farbe des Zackenhintergrunds */
+         }
 
-        .dropdown-content a:hover {
-          background-color: darkred; /* Hover-Effekt für Links */
-        }
+         .verified-badge::before {
+             transform: rotate(45deg); /* Zacken drehen */
+         }
 
-        .dropdown:hover .dropdown-content {
-          display:block; /* Dropdown anzeigen bei Hover */
-        }
+         .verified-badge::after {
+             transform: rotate(-45deg); /* Zacken drehen */
+         }
+
+         .checkmark {
+             color:white; /* Weiße Farbe für den Haken */
+             font-size:10px; /* Größe des Häkchens verkleinert */
+         }
     </style>
 </head>
 <body>
@@ -140,16 +144,6 @@
       <button id="loginSubmitBtn">Einloggen</button>
       <div id="loginMessage"></div> <!-- Nachricht für Login -->
       <p id="noAccountMessage" style="color:white;">Wenn du kein Konto hast, gehe auf das Menü und erstelle einen Account.</p> <!-- Hinweis für neue Benutzer -->
-
-      <!-- Dropdown Menu im Modal -->
-      <div class="dropdown">
-          <button>Menu</button>
-          <div class="dropdown-content">
-              <a href="index.html">Home</a>
-              <a href="login.html">Login</a>
-          </div>
-      </div>
-
     </div>
 </div>
 
@@ -198,7 +192,7 @@ document.getElementById('loginSubmitBtn').onclick = function() {
         if (snapshot.exists()) {
             let userFound = false;
 
-            snapshot.forEach((childSnapshot) => {
+           snapshot.forEach((childSnapshot) => {
                 const userData = childSnapshot.val();
                 if (userData.username === username && userData.password === password) {
                     userFound = true; // Benutzer gefunden
@@ -210,109 +204,128 @@ document.getElementById('loginSubmitBtn').onclick = function() {
                     loadComments(); // Lade Kommentare nach dem Einloggen
                     document.getElementById('commentSection').style.display = 'block'; // Zeige Kommentarbereich an
                     document.getElementById('commentsSection').style.display = 'block'; // Zeige Kommentare an
-                }
-            });
 
-            if (!userFound) {
+                    // Überprüfen ob der Benutzer verifiziert ist
+                    if (userData.isVerified) {
+                        console.log("Benutzer ist verifiziert.");
+                    } else {
+                        console.log("Benutzer ist nicht verifiziert.");
+                    }
+                }
+           });
+
+           if (!userFound) {
                 showMessage("Ungültige Anmeldedaten!", true);
                 document.getElementById('commentSection').style.display = 'none'; // Verstecke Kommentarbereich bei ungültigen Daten
                 document.getElementById('commentsSection').style.display = 'none'; // Verstecke Kommentare bei ungültigen Daten
                 document.getElementById('noAccountMessage').style.display = 'block'; // Zeige Hinweis für neue Benutzer an
-            } else {
+           } else {
                 document.getElementById('noAccountMessage').style.display = 'none'; // Verstecke Hinweis für neue Benutzer
-            }
-        } else {
-            showMessage("Keine Benutzerdaten gefunden!", true);
-        }
-    }).catch((error) => {
-        console.error("Fehler beim Abrufen der Daten:", error);
-        showMessage("Ein Fehler ist aufgetreten!", true);
-    });
+           }
+       } else {
+           showMessage("Keine Benutzerdaten gefunden!", true);
+       }
+   }).catch((error) => {
+       console.error("Fehler beim Abrufen der Daten:", error);
+       showMessage("Ein Fehler ist aufgetreten!", true);
+   });
 };
 
 // Funktion zum Hinzufügen eines Kommentars
 document.getElementById('submitCommentBtn').onclick = function() {
-    const commentInput = document.getElementById('commentInput').value.trim();
-    
-    // Eingabefelder überprüfen
-    if (!commentInput) {
-        showMessage("Bitte schreibe einen Kommentar!", true);
-        return;
-    }
+   const commentInput = document.getElementById('commentInput').value.trim();
+   
+   // Eingabefelder überprüfen
+   if (!commentInput) {
+       showMessage("Bitte schreibe einen Kommentar!", true);
+       return;
+   }
 
-    const username = localStorage.getItem('username'); // Benutzername aus dem Local Storage abrufen
+   const username = localStorage.getItem('username'); // Benutzername aus dem Local Storage abrufen
 
-    if (!username) {
-        showMessage("Bitte melde dich an, um einen Kommentar zu schreiben.", true);
-        return; // Benutzer muss angemeldet sein
-    }
+   if (!username) {
+       showMessage("Bitte melde dich an, um einen Kommentar zu schreiben.", true);
+       return; // Benutzer muss angemeldet sein
+   }
 
-    // Kommentar in der Datenbank speichern
-    const commentId = Date.now(); // Eindeutige ID basierend auf der aktuellen Zeit
-    set(ref(database, 'comments/' + commentId), {
-        username,
-        commentText: commentInput,
-        replies: [], // Initialisiere Antworten als leeres Array
-        timestamp: commentId // Zeitstempel für spätere Verwendung
-    }).then(() => {
-        showMessage("Kommentar erfolgreich hinzugefügt!", false);
-        document.getElementById('commentInput').value = ''; // Eingabefeld leeren
-        loadComments(); // Kommentare neu laden
-    }).catch((error) => {
-        console.error("Fehler beim Speichern des Kommentars:", error);
-        showMessage("Ein Fehler ist aufgetreten!", true);
-    });
+   // Kommentar in der Datenbank speichern
+   const commentId = Date.now(); // Eindeutige ID basierend auf der aktuellen Zeit
+   set(ref(database, 'comments/' + commentId), {
+       username,
+       commentText: commentInput,
+       timestamp: commentId // Zeitstempel für spätere Verwendung
+   }).then(() => {
+       showMessage("Kommentar erfolgreich hinzugefügt!", false);
+       document.getElementById('commentInput').value = ''; // Eingabefeld leeren
+       loadComments(); // Kommentare neu laden
+   }).catch((error) => {
+       console.error("Fehler beim Speichern des Kommentars:", error);
+       showMessage("Ein Fehler ist aufgetreten!", true);
+   });
 };
 
 // Funktion zum Laden der Kommentare
 function loadComments() {
-    const dbRef = ref(database);
-    
-    get(child(dbRef, 'comments')).then((snapshot) => {
-        const commentsSection = document.getElementById('commentsSection');
-        
-        // Vorhandene Kommentare löschen
-        commentsSection.innerHTML = '<h2>Kommentare:</h2>'; 
+   const dbRef = ref(database);
+   
+   get(child(dbRef, 'comments')).then((snapshot) => {
+       const commentsSection = document.getElementById('commentsSection');
+       
+       // Vorhandene Kommentare löschen
+       commentsSection.innerHTML = '<h2>Kommentare:</h2>'; 
 
-        if (snapshot.exists()) {
-            snapshot.forEach((childSnapshot) => {
-                const commentData = childSnapshot.val();
-                const commentDiv = document.createElement('div');
-                commentDiv.classList.add('comment');
-                commentDiv.innerHTML = `
-                    <strong>${commentData.username}</strong>: ${commentData.commentText}
-                    ${commentData.username === localStorage.getItem('username') ? `<button class="deleteCommentBtn" data-comment-id="${childSnapshot.key}">Löschen</button>` : ''}
-                    <button onclick="toggleReply('${childSnapshot.key}')">Antworten</button>
-                    <div class="replySection" id="reply-${childSnapshot.key}">
-                        <textarea placeholder="Schreibe eine Antwort..." rows="2"></textarea>
-                        <button onclick="submitReply('${childSnapshot.key}')">Antwort absenden</button>
-                        <div class="replies"></div>
-                    </div>
-                `;
-                commentsSection.appendChild(commentDiv);
+       if (snapshot.exists()) {
+           snapshot.forEach((childSnapshot) => {
+               const commentData = childSnapshot.val();
+               const commentDiv = document.createElement('div');
+               commentDiv.classList.add('comment');
+               
+               // Überprüfen, ob der Benutzer verifiziert ist
+               get(child(dbRef, 'users/' + commentData.username)).then(userSnapshot => {
+                   let isVerified = false;
 
-                // Antworten anzeigen (falls vorhanden)
-                if (commentData.replies && commentData.replies.length > 0) {
-                    const repliesDiv = commentDiv.querySelector('.replies');
-                    commentData.replies.forEach(reply => {
-                        const replyDiv = document.createElement('div');
-                        replyDiv.classList.add('comment');
-                        replyDiv.innerHTML = `<strong>${reply.username}</strong>: ${reply.text}`;
-                        repliesDiv.appendChild(replyDiv);
-                    });
-                }
+                   if (userSnapshot.exists()) {
+                       const userData = userSnapshot.val();
+                       isVerified = userData.isVerified; // Verifizierungsstatus abrufen
+                   }
 
-                commentsSection.style.display = 'block'; // Zeige den Kommentarbereich an.
-                
-            });
-        } else {
-            commentsSection.innerHTML += '<p>Keine Kommentare vorhanden.</p>';
-        }
+                   // Haken anzeigen, wenn der Benutzer verifiziert ist (angepasst)
+                   const verificationBadge = isVerified ? '<span class="verified-badge"><span class="checkmark">&#10003;</span></span>' : ''; 
 
-        
-    }).catch((error) => {
-        console.error("Fehler beim Abrufen der Kommentare:", error);
-    });
+                   commentDiv.innerHTML = `
+                       <strong>${commentData.username} ${verificationBadge}</strong>: ${commentData.commentText}
+                       ${commentData.username === localStorage.getItem('username') ? `<button class="deleteCommentBtn" data-comment-id="${childSnapshot.key}">Löschen</button>` : ''}
+                       <button onclick="toggleReply('${childSnapshot.key}')">Antworten</button>
+                       <div class="replySection" id="reply-${childSnapshot.key}">
+                           <textarea placeholder="Schreibe eine Antwort..." rows="2"></textarea>
+                           <button onclick="submitReply('${childSnapshot.key}')">Antwort absenden</button>
+                           <div class="replies"></div>
+                       </div>
+                   `;
+                   commentsSection.appendChild(commentDiv);
+
+                   // Antworten anzeigen (falls vorhanden)
+                   if (commentData.replies && commentData.replies.length > 0) {
+                       const repliesDiv = commentDiv.querySelector('.replies');
+                       commentData.replies.forEach(reply => {
+                           const replyDiv = document.createElement('div');
+                           replyDiv.classList.add('comment');
+                           replyDiv.innerHTML = `<strong>${reply.username}</strong>: ${reply.text}`;
+                           repliesDiv.appendChild(replyDiv);
+                       });
+                   }
+
+                   commentsSection.style.display = 'block'; // Zeige den Kommentarbereich an.
+               });
+           });
+       } else {
+           commentsSection.innerHTML += '<p>Keine Kommentare vorhanden.</p>';
+       }
+
+       
+   }).catch((error) => {
+       console.error("Fehler beim Abrufen der Kommentare:", error);
+   });
 }
 
 // Event Listener für das Löschen von Kommentaren
@@ -380,7 +393,7 @@ window.onload = function() {
    } else {
        loadComments(); 
        document.getElementById('commentSection').style.display = 'block'; 
-       document.getElementById('commentsSection').style.display = 'block'; 
+       document.getElementById('commentsSection').style.display = 'block';
    }
 };
 
