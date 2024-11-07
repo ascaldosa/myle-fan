@@ -3,69 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login ohne DB</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+    <title>Firebase Realtime Database Beispiel</title>
+    <script type="module">
+        // Importiere die benötigten Funktionen aus den SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+
+        // Deine Firebase-Konfiguration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC63y4s1JW_zl2FfhPwkrIM2DzcW9LuLjI",
+            authDomain: "myle-fanpage-517ce.firebaseapp.com",
+            databaseURL: "https://myle-fanpage-517ce-default-rtdb.firebaseio.com",
+            projectId: "myle-fanpage-517ce",
+            storageBucket: "myle-fanpage-517ce.firebasestorage.app",
+            messagingSenderId: "367391290237",
+            appId: "1:367391290237:web:9715b52f0bae093a495214",
+            measurementId: "G-C968R9VC9H"
+        };
+
+        // Firebase initialisieren
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+
+        // Funktion zum Speichern von Benutzerdaten
+        function writeUserData(userId, name, email) {
+            set(ref(database, 'users/' + userId), {
+                username: name,
+                email: email
+            }).then(() => {
+                console.log("Daten erfolgreich gespeichert!");
+            }).catch((error) => {
+                console.error("Fehler beim Speichern der Daten:", error);
+            });
         }
-        input {
-            display: block;
-            margin-bottom: 10px;
+
+        // Funktion zum Abrufen von Benutzerdaten
+        function readUserData(userId) {
+            const dbRef = ref(database);
+            get(child(dbRef, 'users/' + userId)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    console.log("Benutzerdaten:", data);
+                } else {
+                    console.log("Keine Daten gefunden.");
+                }
+            }).catch((error) => {
+                console.error("Fehler beim Abrufen der Daten:", error);
+            });
         }
-        #message {
-            margin-top: 20px;
-            color: red;
-        }
-    </style>
+
+        // Beispielaufrufe
+        writeUserData('user1', 'Max Mustermann', 'max@example.com');
+        readUserData('user1');
+    </script>
 </head>
 <body>
-    <h1>Login</h1>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Passwort" required>
-    <button id="loginBtn">Einloggen</button>
-    <button id="registerBtn">Registrieren</button>
-
-    <div id="message"></div>
-
-    <script>
-        // Funktion zur Registrierung
-        document.getElementById('registerBtn').onclick = function() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // Überprüfen, ob der Benutzer bereits existiert
-            if (localStorage.getItem(email)) {
-                showMessage("Benutzer existiert bereits!", true);
-                return;
-            }
-
-            // Benutzer registrieren
-            localStorage.setItem(email, password);
-            showMessage("Registrierung erfolgreich! Du kannst dich jetzt einloggen.");
-        };
-
-        // Funktion zum Einloggen
-        document.getElementById('loginBtn').onclick = function() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // Überprüfen der Anmeldedaten
-            if (localStorage.getItem(email) === password) {
-                showMessage("Login erfolgreich!", false);
-                // Weiterleitung zur index.html
-                window.location.href = 'index.html';
-            } else {
-                showMessage("Ungültige Anmeldedaten!", true);
-            }
-        };
-
-        // Funktion zur Anzeige von Nachrichten
-        function showMessage(message, isError) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = message;
-            messageDiv.style.color = isError ? 'red' : 'green';
-        }
-    </script>
+    <h1>Firebase Realtime Database Beispiel</h1>
 </body>
 </html>
