@@ -122,24 +122,6 @@
            background-color :#218838 ; /* Dunkler bei Hover */
        }
 
-       .verified-badge {
-           display:inline-block; /* Inline-Block für den Haken-Kreis */
-           width :15px ; /* Breite des Kreises */
-           height :15px ; /* Höhe des Kreises */
-           border-radius :50%; /* Runde Form für den Kreis */
-           background-color:#007bff ; /* Blaue Farbe für den Kreis */
-           color:white ; /* Weiße Schriftfarbe für den Haken im Kreis */
-           text-align:center ; /* Text zentrieren innerhalb des Kreises */
-           font-size:.8em ; /* Schriftgröße des Hakens anpassen */
-           margin-right :5px ; /* Abstand zum Benutzernamen */
-       }
-
-       .verified-badge::after {
-          content:'✓'; /* Haken-Symbol als Inhalt des Kreises */  
-          font-weight:bold ; /* Fettdruck für besseren Kontrast */  
-          color:white ;/* Weiße Schriftfarbe für den Haken */  
-       }
-
     </style>
 </head>
 <body>
@@ -151,7 +133,6 @@
 <!-- Chatbereich -->
 <div class="chat-container" id="chatContainer">
     <h2>Chat</h2>
-    <div id="verifiedBadgeContainer" style="display:none;"></div> <!-- Container für den Verifizierungshaken -->
     <div class="message-container" id="messageContainer">
         <!-- Hier werden die Nachrichten angezeigt -->
     </div>
@@ -163,33 +144,22 @@
 <div id="loginModal" class="modal" style="display:block;">
     <div class="modal-content">
       <h2>Anmelden</h2>
-      <input type="text" id="loginUsername" placeholder="Benutzername" required>
-      <input type="password" id="loginPassword" placeholder="Passwort" required>
-      <button id="loginSubmitBtn">Einloggen</button>
+      <input type="text" id="username" placeholder="Benutzername" required>
+      <input type="password" id="password" placeholder="Passwort" required>
+      <button id="loginBtn">Einloggen</button>
+      <button id="registerBtn">Registrieren</button>
       <div id="loginMessage"></div> <!-- Nachricht für Login -->
       <p id="noAccountMessage">Wenn du kein Konto hast, gehe auf das Menü und erstelle einen Account.</p> <!-- Hinweis für neue Benutzer -->
-
-      <!-- Dropdown-Menü -->
-      <label for="menu">Menü:</label>
-      <select id="menu" onchange="location = this.value;">
-          <option value="">Bitte wählen...</option>
-          <option value="index.html">Zurück zur Startseite</option>
-          <option value="login.html">Einloggen</option>
-      </select>
     </div>
 </div>
 
 <script type="module">
 // Importiere die benötigten Funktionen aus den SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
+// Deine Firebase-Konfiguration
+const firebaseConfig = {
     apiKey: "AIzaSyC63y4s1JW_zl2FfhPwkrIM2DzcW9LuLjI",
     authDomain: "myle-fanpage-517ce.firebaseapp.com",
     databaseURL: "https://myle-fanpage-517ce-default-rtdb.firebaseio.com",
@@ -198,22 +168,61 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebas
     messagingSenderId: "367391290237",
     appId: "1:367391290237:web:9b2f5a1b4fc1d53d495214",
     measurementId: "G-5VGLEV03P6"
-  };
+};
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+// Firebase initialisieren
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
 // Funktion zur Anzeige von Nachrichten
 function showMessage(message, isError) {
-    const messageDiv = document.getElementById('loginMessage'); // Ändere hier die Ziel-Div
+    const messageDiv = document.getElementById('loginMessage');
     messageDiv.textContent = message;
     messageDiv.style.color = isError ? 'red' : 'green'; // Fehlernachricht rot, Erfolg grün
 }
 
+// Funktion zum Registrieren eines neuen Benutzers
+document.getElementById('registerBtn').onclick = function() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    
+    // Eingabefelder überprüfen
+    if (!username || !password) {
+        showMessage("Bitte fülle alle Felder aus!", true);
+        return;
+    }
+
+    // Benutzer-ID erstellen (Benutzername verwenden)
+    const userId = username;
+
+    // Überprüfen, ob der Benutzer bereits existiert
+    const dbRef = ref(database);
+    get(child(dbRef, 'users/' + userId)).then((snapshot) => {
+        if (snapshot.exists()) {
+            showMessage("Benutzer existiert bereits!", true);
+        } else {
+            // Benutzer in der Datenbank speichern
+            set(ref(database, 'users/' + userId), { username, password })
+                .then(() => {
+                    showMessage("Registrierung erfolgreich! Du kannst dich jetzt einloggen.", false);
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                })
+                .catch((error) => {
+                    console.error("Fehler beim Speichern der Daten:", error);
+                    showMessage("Ein Fehler ist aufgetreten!", true);
+                });
+        }
+    }).catch((error) => {
+        console.error("Fehler beim Überprüfen der Benutzerdaten:", error);
+        showMessage("Ein Fehler ist aufgetreten!", true);
+    });
+};
+
 // Funktion zum Einloggen
-document.getElementById('loginSubmitBtn').onclick = function() {
-    const username = document.getElementById('loginUsername').value.trim(); // Keine Umwandlung in Kleinbuchstaben
-    const password = document.getElementById('loginPassword').value.trim();
+document.getElementById('loginBtn').onclick = function() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
     
     // Eingabefelder überprüfen
     if (!username || !password) {
@@ -227,49 +236,32 @@ document.getElementById('loginSubmitBtn').onclick = function() {
         if (snapshot.exists()) {
             let userFound = false;
 
-           snapshot.forEach((childSnapshot) => {
+            snapshot.forEach((childSnapshot) => {
                 const userData = childSnapshot.val();
-                // Benutzername wird hier ohne Umwandlung in Kleinbuchstaben verglichen
                 if (userData.username === username && userData.password === password) {
                     userFound = true; // Benutzer gefunden
-                    localStorage.setItem('username', username); // Speichere den Benutzernamen im Local Storage
-                    showMessage("Erfolgreich eingeloggt!", false);
-                    document.getElementById('loginUsername').value = '';
-                    document.getElementById('loginPassword').value = '';
+                    localStorage.setItem('username', username); // Speichere Benutzernamen im Local Storage
+                    showMessage("Login erfolgreich!", false);
+
                     document.getElementById('loginModal').style.display = 'none'; // Schließe das Modal nach erfolgreichem Login
-                    
+
                     // Zeige den Chatbereich an
                     document.getElementById('chatContainer').style.display = 'block'; 
+
                     loadChatMessages(); // Lade Chatnachrichten nach dem Einloggen
-
-                    // Überprüfen ob der Benutzer verifiziert ist
-                    if (userData.isVerified) {
-                        console.log("Benutzer ist verifiziert.");
-                        // Zeige den blauen Haken oben im Chat
-                        const verifiedBadgeContainer = document.getElementById('verifiedBadgeContainer');
-                        verifiedBadgeContainer.innerHTML = '<span class="verified-badge"></span>'; // Blauer Haken
-                        verifiedBadgeContainer.style.display = 'flex';
-                        verifiedBadgeContainer.style.justifyContent = 'center';
-                        verifiedBadgeContainer.style.marginBottom = '10px';
-                    } else {
-                        console.log("Benutzer ist nicht verifiziert.");
-                    }
                 }
-           });
+            });
 
-           if (!userFound) {
-                showMessage("Ungültige Anmeldedaten! Bitte überprüfe Groß- und Kleinschreibung.", true); // Angepasste Fehlermeldung
-                document.getElementById('noAccountMessage').style.display = 'block'; // Zeige Hinweis für neue Benutzer an
-           } else {
-                document.getElementById('noAccountMessage').style.display = 'none'; // Verstecke Hinweis für neue Benutzer
-           }
-       } else {
-           showMessage("Keine Benutzerdaten gefunden!", true);
-       }
-   }).catch((error) => {
-       console.error("Fehler beim Abrufen der Daten:", error);
-       showMessage("Ein Fehler ist aufgetreten!", true);
-   });
+            if (!userFound) {
+                showMessage("Ungültige Anmeldedaten!", true);
+            }
+        } else {
+            showMessage("Keine Benutzerdaten gefunden!", true);
+        }
+    }).catch((error) => {
+        console.error("Fehler beim Abrufen der Daten:", error);
+        showMessage("Ein Fehler ist aufgetreten!", true);
+    });
 };
 
 // Funktion zum Senden einer Chatnachricht (Kommentar)
@@ -293,7 +285,7 @@ document.getElementById('sendChatBtn').onclick = function() {
    set(ref(database, `comments/${commentId}`), { 
        username,
        commentText : chatInputValue,
-       isVerified : true , // Setze hier die Verifizierung auf true oder false basierend auf deinem Logik.
+       isVerified : true,
        timestamp : commentId,
    }).then(() => { 
        document.getElementById('chatInput').value = ''; 
@@ -313,6 +305,29 @@ window.onload = function() {
        loadChatMessages(); // Lade die Chatnachrichten beim Laden der Seite.
    }
 };
+
+// Funktion zum Laden der Chatnachrichten
+function loadChatMessages() {
+   const dbRef = ref(database);
+   get(child(dbRef, 'comments')).then((snapshot) => {
+       if (snapshot.exists()) {
+           const messageContainer = document.getElementById('messageContainer');
+           messageContainer.innerHTML = ''; // Leere den Container vor dem Laden neuer Nachrichten
+
+           snapshot.forEach((childSnapshot) => {
+               const data = childSnapshot.val();
+               const messageDiv = document.createElement('div');
+               messageDiv.className = data.username === localStorage.getItem('username') ? 'message from-me' : 'message from-other';
+               messageDiv.textContent = data.username !== localStorage.getItem('username') ? `${data.username}: ${data.commentText}` : data.commentText; // Zeige nur den Text ohne Benutzernamen für eigene Nachrichten
+               messageContainer.appendChild(messageDiv);
+           });
+       } else {
+           console.log("Keine Nachrichten gefunden.");
+       }
+   }).catch((error) => {
+       console.error("Fehler beim Abrufen der Nachrichten:", error);
+   });
+}
 
 </script>
 
