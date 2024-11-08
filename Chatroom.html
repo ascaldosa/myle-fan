@@ -4,132 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Rooms - Myle Fanpage</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: black;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: red;
-        }
-        input, textarea {
-            padding: 10px;
-            margin: 10px 0;
-            border: 2px solid red;
-            border-radius: 5px;
-            width: 250px;
-        }
-        button {
-            padding: 10px;
-            background-color: red;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: darkred;
-        }
-        #message {
-            margin-top: 20px;
-            color: red; /* Fehlernachrichten rot */
-        }
+  <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(to bottom right, #1a1a1a, #333);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: 100vh;
+        margin: 0;
+        padding: 20px; /* Standard-Padding */
+    }
+    h1 {
+        color: #ff4d4d; /* Helleres Rot */
+        font-size: 2.2em; /* Etwas kleinere Schriftgröße */
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        margin-bottom: 15px; /* Abstand nach unten */
+    }
+    input, textarea {
+        padding: 10px; /* Weniger Padding für Eingabefelder */
+        margin: 8px 0; /* Weniger Margin */
+        border: 2px solid #ff4d4d; /* Helleres Rot */
+        border-radius: 15px; /* Abgerundete Ecken */
+        width: 220px; /* Etwas schmaler */
+        background-color: #444; /* Dunkelgrau für Eingabefelder */
+        color: white; /* Weiße Schriftfarbe */
+        transition: border-color 0.3s ease; /* Sanfter Übergang für den Rahmen */
+    }
+    input:focus, textarea:focus {
+        border-color: #e60000; /* Dunkleres Rot bei Fokus */
+    }
+    button {
+        padding: 8px 12px; /* Weniger Padding für Buttons */
+        background-color: #ff4d4d; /* Helleres Rot */
+        color: white;
+        border: none;
+        border-radius: 15px; /* Abgerundete Ecken */
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease; /* Sanfter Übergang */
+        margin-left: 5px; /* Abstand zum Texteingabefeld */
+    }
+    button:hover {
+        background-color: #e60000; /* Dunkleres Rot bei Hover */
+    }
+    #message {
+        margin-top: 15px; /* Weniger Abstand für Fehlermeldungen */
+        color: red; /* Fehlernachrichten rot */
+    }
 
-        /* Chat Styles */
-        .chat-container {
-            max-width: 600px; 
-            width: 100%;
-            margin-top: 20px; 
-            display: none; /* Standardmäßig verstecken */
-        }
-        .message-container {
-            display: flex; 
-            flex-direction: column; 
-            max-height: 300px; 
-            overflow-y: auto; /* Scrollbar für Überlauf */
-            border-radius: 5px; 
-            background-color: rgba(255, 255, 255, 0.1); /* Hintergrundfarbe des Chatfensters */
-        }
-        .message {
-            padding: 10px; 
-            border-radius: 20px; 
-            margin: 5px; 
-            max-width: fit-content; 
-            word-wrap: break-word; 
-        }
-        .from-other {
-            background-color: black; /* Hintergrundfarbe für andere Benutzer */
-            color: white; /* Textfarbe für andere Benutzer */
-            align-self: flex-start; /* Links ausgerichtet */
-        }
-        .from-me {
-            background-color: gray; /* Graue Hintergrundfarbe für eigene Nachrichten */
-            color: white; /* Weiße Schriftfarbe für eigene Nachrichten */
-            align-self: flex-end; /* Rechts ausgerichtet */
-        }
+    /* Chat Styles */
+    .chat-container {
+        max-width: 600px; 
+        width: 100%;
+        margin-top: 20px; 
+        display: none; /* Standardmäßig verstecken */
+    }
+    .message-container {
+        display: flex; 
+        flex-direction: column; 
+        max-height: 400px; 
+        overflow-y: auto; /* Scrollbar für Überlauf */
+        border-radius: 20px; 
+        background-color: rgba(255, 255, 255, 0.1); /* Hintergrundfarbe des Chatfensters */
+        padding: 15px;
+    }
+    .message {
+        padding: 10px; 
+        border-radius: 15px; 
+        margin-bottom: 10px; 
+        max-width: fit-content; 
+        word-wrap: break-word; 
+        box-shadow: 0 3px 6px rgba(0,0,0,0.2); /* Weicherer Schatten für Nachrichten */
+    }
+    .from-other {
+        background-color: rgba(255,255,255,0.2); /* Hellerer Hintergrund für andere Benutzer */
+        color:white; 
+        align-self:flex-start; 
+    }
+    .from-me {
+        background-color: rgba(128,128,128,0.8); /* Graue Hintergrundfarbe für eigene Nachrichten */
+        color:white; 
+        align-self:flex-end; 
+    }
 
-        /* Anmelde-Pop-up Styles */
-        .modal {
-           display: flex; 
-           justify-content: center; 
-           align-items: center; 
-           position: fixed; 
-           top :0 ; 
-           left :0 ; 
-           width :100%; 
-           height :100%; 
-           background-color :rgba(0, 0, 0, 0.7); /* Dunkler Hintergrund mit Transparenz */
-           z-index :1000; /* Über anderen Inhalten */
-       }
+    /* Anmelde-Pop-up Styles */
+    .modal {
+       display:flex; 
+       justify-content:center; 
+       align-items:center; 
+       position:fixed; 
+       top :0 ; 
+       left :0 ; 
+       width :100%; 
+       height :100%; 
+       background-color :rgba(0,0,0,0.8); /* Dunkler Hintergrund mit mehr Transparenz */
+       z-index :1000; 
+   }
 
-       .modal-content {
-           background-color :#333; /* Dunkelgrauer Hintergrund für das Modal */
-           padding :20px ;
-           border-radius :10px ;
-           box-shadow :0 0 15px rgba(255,255,255,0.5);
-           color:white ; /* Textfarbe im Modal */
-           width :300px ; /* Breite des Modals */
-           text-align:center ; /* Text zentrieren */
-           position:absolute ;
-           top :50%;
-           left :50%;
-           transform :translate(-50%, -50%); /* Zentriere das Modal */
-       }
+   .modal-content {
+       background-color :#444; /* Dunkelgrauer Hintergrund für das Modal */
+       padding :20px ;
+       border-radius :20px ; /* Stärker abgerundete Ecken für das Modal */
+       box-shadow :0 4px 15px rgba(255,255,255,0.5);
+       color:white ; 
+       width :300px ; 
+       text-align:center ; 
+       position:absolute ;
+       top :50%;
+       left :50%;
+       transform :translate(-50%,-50%); 
+   }
 
-       .modal-content h2 {
-           color:red ; /* Rote Überschrift im Modal */
-       }
+   .modal-content h2 {
+       color:#ff4d4d ; /* Helleres Rot für die Überschrift im Modal */
+   }
 
-       #chatInput {
-           background-color:#444 ; /* Dunkelgrauer Hintergrund für das Eingabefeld */
-           color:white ; /* Weiße Schriftfarbe im Eingabefeld */
-           border-radius :5px ; /* Abgerundete Ecken */
-           width: calc(100% - 60px); /* Breite anpassen für den Button daneben */
-       }
+   #chatInput {
+       background-color:#555 ; 
+       color:white ; 
+       border-radius :20px ; 
+   }
 
-       #sendChatBtn {
-           background-color :#28a745 ; /* Grüner Hintergrund für den Senden-Button */
-           margin-left: -5px; /* Leicht überlappen mit dem Eingabefeld */
-       }
-
-       #sendChatBtn:hover {
-           background-color :#218838 ; /* Dunkler bei Hover */
-       }
-
-       .verified-icon {
-           color: blue; /* Blaue Farbe für den Haken */
-           font-size: 24px; /* Größe des Hakens anpassen */
-       }
-
-    </style>
+   .verified-icon {
+       color:#00ccff; /* Helle Farbe für den Haken */
+       font-size :24px;
+   }
+</style>
 </head>
 <body>
 
