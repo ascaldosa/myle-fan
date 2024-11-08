@@ -112,14 +112,21 @@
            background-color:#444 ; /* Dunkelgrauer Hintergrund für das Eingabefeld */
            color:white ; /* Weiße Schriftfarbe im Eingabefeld */
            border-radius :5px ; /* Abgerundete Ecken */
+           width: calc(100% - 60px); /* Breite anpassen für den Button daneben */
        }
 
        #sendChatBtn {
            background-color :#28a745 ; /* Grüner Hintergrund für den Senden-Button */
+           margin-left: -5px; /* Leicht überlappen mit dem Eingabefeld */
        }
 
        #sendChatBtn:hover {
            background-color :#218838 ; /* Dunkler bei Hover */
+       }
+
+       .verified-icon {
+           color: blue; /* Blaue Farbe für den Haken */
+           font-size: 24px; /* Größe des Hakens anpassen */
        }
 
     </style>
@@ -133,11 +140,15 @@
 <!-- Chatbereich -->
 <div class="chat-container" id="chatContainer">
     <h2>Chat</h2>
+    <div id="verifiedUsersCount" style="color:red;"></div> <!-- Anzeige der Anzahl der verifizierten Benutzer -->
+    <div id="verifiedIcon" class="verified-icon" style="display:none;">✔️</div> <!-- Haken für verifizierte Benutzer -->
     <div class="message-container" id="messageContainer">
         <!-- Hier werden die Nachrichten angezeigt -->
     </div>
-    <textarea id="chatInput" placeholder="Schreibe eine Nachricht..." rows="2"></textarea>
-    <button id="sendChatBtn">Nachricht senden</button>
+    <div style="display:flex;">
+      <textarea id="chatInput" placeholder="Schreibe eine Nachricht..." rows="1"></textarea>
+      <button id="sendChatBtn">Senden</button>
+    </div>
 </div>
 
 <!-- Modal für das Login -->
@@ -179,6 +190,50 @@ function showMessage(message, isError) {
     const messageDiv = document.getElementById('loginMessage');
     messageDiv.textContent = message;
     messageDiv.style.color = isError ? 'red' : 'green'; // Fehlernachricht rot, Erfolg grün
+}
+
+// Funktion zum Erstellen des verifiedUsers Tabs
+function createVerifiedUsersTab() {
+    const dbRef = ref(database);
+    
+    // Überprüfen, ob der Tab 'verifiedUsers' existiert
+    get(child(dbRef, 'verifiedUsers')).then((snapshot) => {
+        if (!snapshot.exists()) {
+            // Tab erstellen und Benutzer hinzufügen
+            set(ref(database, 'verifiedUsers/Myle'), { verified: true })
+                .then(() => {
+                    return set(ref(database, 'verifiedUsers/Marvin'), { verified: true });
+                })
+                .then(() => {
+                    console.log("Tab 'verifiedUsers' erstellt und Benutzer hinzugefügt.");
+                })
+                .catch((error) => {
+                    console.error("Fehler beim Hinzufügen der Benutzer:", error);
+                });
+        } else {
+            console.log("Der Tab 'verifiedUsers' existiert bereits.");
+        }
+    }).catch((error) => {
+        console.error("Fehler beim Überprüfen des Tabs:", error);
+    });
+}
+// Funktion zur Anzeige des Willkommens-Pop-ups
+function showWelcomePopup(username) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class='modal-content'>
+            <h2>Willkommen!</h2>
+            <p>Hallo ${username}, wir freuen uns, dass du hier bist! Viel Spaß beim Chatten!</p>
+            <button class="close-button">Schließen</button>
+        </div>`;
+    
+    document.body.appendChild(modal);
+
+    // Event-Listener für den Schließen-Button hinzufügen
+    modal.querySelector('.close-button').addEventListener('click', () => {
+        modal.remove(); // Entfernt das Modal vom DOM
+    });
 }
 
 // Funktion zum Registrieren eines neuen Benutzers
@@ -249,6 +304,10 @@ document.getElementById('loginBtn').onclick = function() {
                     document.getElementById('chatContainer').style.display = 'block'; 
 
                     loadChatMessages(); // Lade Chatnachrichten nach dem Einloggen
+                    loadVerifiedUsersCount(); // Lade die Anzahl der verifizierten Benutzer nach dem Einloggen
+
+                    // Überprüfe den Verifizierungsstatus des Benutzers und zeige das Pop-up an
+                    checkUserVerification(username);
                 }
             });
 
@@ -263,6 +322,18 @@ document.getElementById('loginBtn').onclick = function() {
         showMessage("Ein Fehler ist aufgetreten!", true);
     });
 };
+
+// Funktion zum Überprüfen des Verifizierungsstatus eines Benutzers und Anzeigen des Pop-ups
+function checkUserVerification(username) {
+   const dbRef = ref(database);
+   get(child(dbRef, `verifiedUsers/${username}`)).then((snapshot) => {
+       if (snapshot.exists() && snapshot.val().verified === true) {
+           showWelcomePopup(username); // Zeige das Willkommens-Pop-up an
+       }
+   }).catch((error) => {
+       console.error("Fehler beim Überprüfen des Verifizierungsstatus:", error);
+   });
+}
 
 // Funktion zum Senden einer Chatnachricht (Kommentar)
 document.getElementById('sendChatBtn').onclick = function() {
@@ -298,11 +369,13 @@ document.getElementById('sendChatBtn').onclick = function() {
 
 // Lade die Chatnachrichten beim Laden der Seite und überprüfe den Anmeldestatus
 window.onload = function() {
+   createVerifiedUsersTab(); // Tab erstellen falls nicht vorhanden
    const username = localStorage.getItem('username');
    if (!username) { 
        document.getElementById('noAccountMessage').style.display = 'block'; // Zeige Hinweis für neue Benutzer an
    } else { 
        loadChatMessages(); // Lade die Chatnachrichten beim Laden der Seite.
+       loadVerifiedUsersCount(); // Lade die Anzahl der verifizierten Benutzer beim Laden.
    }
 };
 
@@ -317,9 +390,19 @@ function loadChatMessages() {
            snapshot.forEach((childSnapshot) => {
                const data = childSnapshot.val();
                const messageDiv = document.createElement('div');
-               messageDiv.className = data.username === localStorage.getItem('username') ? 'message from-me' : 'message from-other';
-               messageDiv.textContent = data.username !== localStorage.getItem('username') ? `${data.username}: ${data.commentText}` : data.commentText; // Zeige nur den Text ohne Benutzernamen für eigene Nachrichten
-               messageContainer.appendChild(messageDiv);
+               let displayName;
+
+               // Überprüfe den Verifizierungsstatus und füge das SVG hinzu
+               get(child(ref(database), `verifiedUsers/${data.username}`)).then(verificationSnapshot => {
+                   const isVerifiedUser = verificationSnapshot.exists() && verificationSnapshot.val().verified === true;
+
+                   displayName = isVerifiedUser ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#007AFF"/><path d="M7 12l3 3 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> ${data.username}` : data.username;
+
+                   messageDiv.className = data.username === localStorage.getItem('username') ? 'message from-me' : 'message from-other';
+                   messageDiv.innerHTML = data.username !== localStorage.getItem('username') ? `${displayName}: ${data.commentText}` : data.commentText;
+
+                   messageContainer.appendChild(messageDiv);  
+               }).catch(error => console.error("Fehler beim Überprüfen des Verifizierungsstatus:", error));
            });
        } else {
            console.log("Keine Nachrichten gefunden.");
@@ -329,7 +412,28 @@ function loadChatMessages() {
    });
 }
 
+// Funktion zum Laden der Anzahl der verifizierten Benutzer und Anzeigen des Hakens
+function loadVerifiedUsersCount() {
+   const dbRef = ref(database);
+   get(child(dbRef, 'verifiedUsers')).then((snapshot) => {
+       if (snapshot.exists()) {
+           const verifiedUsersCount = snapshot.numChildren(); // Anzahl der verifizierten Benutzer ermitteln
+           document.getElementById('verifiedUsersCount').textContent = `Anzahl verifizierter Benutzer in der Datenbank: ${verifiedUsersCount}`;
+           
+           // Haken anzeigen oder verstecken basierend auf der Anzahl verifizierter Benutzer
+           if (verifiedUsersCount > 0) {
+               document.getElementById('verifiedIcon').style.display = 'block'; // Haken anzeigen
+           } else {
+               document.getElementById('verifiedIcon').style.display = 'none'; // Haken verstecken
+           }
+       } else {
+           document.getElementById('verifiedUsersCount').textContent = `Anzahl verifizierter Benutzer in der Datenbank: 0`;
+           document.getElementById('verifiedIcon').style.display = 'none'; // Haken verstecken wenn keine verifizierten Benutzer vorhanden sind
+       }
+   }).catch((error) => {
+       console.error("Fehler beim Abrufen der verifizierten Benutzer:", error);
+   });
+}
 </script>
 
-</body>
-</html>
+</body
