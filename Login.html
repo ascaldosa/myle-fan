@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: black;
+            background-color: #2c2c2c; /* Helleres Grau */
             color: white;
             display: flex;
             flex-direction: column;
@@ -18,24 +18,30 @@
         }
         h1 {
             color: red;
+            margin-bottom: 20px; /* Abstand unter dem Titel */
         }
         input {
             padding: 10px;
             margin: 10px 0;
-            border: 2px solid red;
+            border: 2px solid #b22222; /* Helleres Rot */
             border-radius: 5px;
             width: 250px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Schatten hinzufügen */
+            background-color: #444; /* Dunkleres Grau für Eingabefelder */
+            color: white; /* Textfarbe in Eingabefeldern */
         }
         button {
             padding: 10px;
-            background-color: red;
+            background-color: #b22222; /* Helleres Rot */
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s; /* Sanfter Übergang */
+            margin-top: 10px; /* Abstand zwischen den Buttons */
         }
         button:hover {
-            background-color: darkred;
+            background-color: #a52a2a; /* Dunkleres Rot beim Hover */
         }
         #message {
             margin-top: 20px;
@@ -63,15 +69,15 @@
         import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
         const firebaseConfig = {
-    apiKey: "AIzaSyC63y4s1JW_zl2FfhPwkrIM2DzcW9LuLjI",
-    authDomain: "myle-fanpage-517ce.firebaseapp.com",
-    databaseURL: "https://myle-fanpage-517ce-default-rtdb.firebaseio.com",
-    projectId: "myle-fanpage-517ce",
-    storageBucket: "myle-fanpage-517ce.firebasestorage.app",
-    messagingSenderId: "367391290237",
-    appId: "1:367391290237:web:9b2f5a1b4fc1d53d495214",
-    measurementId: "G-5VGLEV03P6"
-  };
+          apiKey: "AIzaSyC63y4s1JW_zl2FfhPwkrIM2DzcW9LuLjI",
+          authDomain: "myle-fanpage-517ce.firebaseapp.com",
+          databaseURL: "https://myle-fanpage-517ce-default-rtdb.firebaseio.com",
+          projectId: "myle-fanpage-517ce",
+          storageBucket: "myle-fanpage-517ce.firebasestorage.app",
+          messagingSenderId: "367391290237",
+          appId: "1:367391290237:web:9b2f5a1b4fc1d53d495214",
+          measurementId: "G-5VGLEV03P6"
+        };
 
         // Firebase initialisieren
         const app = initializeApp(firebaseConfig);
