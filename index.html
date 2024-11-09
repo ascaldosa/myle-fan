@@ -143,6 +143,18 @@
            background-color:#a60f24; /* Etwas dunkler bei Hover */
          }
 
+         audio {
+             width: calc(100% - 40px); /* Breite des Players anpassen (40px für Padding) */
+             margin-top: 20px; 
+             background-color:#282828; /* Dunkelgrauer Hintergrund für den Player */
+             border-radius:5px; 
+             outline:none; 
+             border:none; 
+             color:white; 
+             padding-left :10px ; 
+             padding-right :10px ; 
+         }
+
     </style>
 </head>
 <body>
@@ -159,13 +171,8 @@
        <a href="myle.team.html">Infos über Myle Team</a>
        <a href="Quiz.html">Quiz</a>
        <a href="Myle-winc-quiz.html">Quiz Myle/Wincent</a>
-        <a href="Galerie.html">Galarie</a>
-         <a href="Chatroom.html">Chatroom</a>
-          
-         
-
-         
-
+       <a href="Galerie.html">Galarie</a>
+       <a href="Chatroom.html">Chatroom</a>
      </div>
    </div>
 </nav>
@@ -175,6 +182,13 @@
 </div>
 
 <div class="content" id="about">
+
+   <!-- Hinweis für den Musik-Button -->
+   <div style="text-align:center;">
+       <h4>Drücke Play für Hintergrundmusik:</h4>
+       <button id="musicButton" onclick="toggleMusic()" style="background-color:#c8102e;color:white;padding:10px;border:none;border-radius:5px;">Play</button>
+   </div>
+
    <h3>Über mich - Marvin</h3>
    <p>Hallo! Ich bin Marvin, 17 Jahre alt und komme aus Hamburg. Musik ist meine Leidenschaft, und Myle ist für mich mehr als nur ein Künstler – er inspiriert mich mit seinen Texten und Melodien.</p>
 
@@ -183,6 +197,7 @@
    <p>Seine Musik motiviert mich und gibt mir Kraft in schwierigen Zeiten. Ich liebe es, seine Lieder zu hören, während ich mit Freunden abhänge oder einfach nur entspanne.</p>
 
    <p>Ich hoffe, dass diese Fanpage anderen Fans von Myle hilft, mehr über ihn zu erfahren und sich mit seiner Musik zu verbinden!</p>
+
 </div>
 
 <footer>
@@ -201,6 +216,12 @@
     </div>
 </div>
 
+<!-- Audio Player am Ende der Seite -->
+<audio id="backgroundMusic" loop style="display:none;">
+    <source src="audio/fuck it.m4a" type="audio/mp4">
+    Dein Browser unterstützt dieses Audio-Format nicht.
+</audio>
+
 <script>
 // Funktion zur Anzeige des Begrüßungsmodals
 function showWelcome() {
@@ -217,6 +238,20 @@ function showWelcome() {
 function closeWelcome() {
     const modal = document.getElementById('welcomeModal');
     modal.classList.remove('show'); // Entferne die Klasse 'show'
+}
+
+// Funktion zum Umschalten von Play/Pause
+function toggleMusic() {
+    const music = document.getElementById('backgroundMusic');
+    const button = document.getElementById('musicButton');
+
+    if (music.paused) {
+        music.play();
+        button.textContent = 'Pause'; // Ändere den Button-Text auf "Pause"
+    } else {
+        music.pause();
+        button.textContent = 'Play'; // Ändere den Button-Text zurück auf "Play"
+    }
 }
 
 // Zeige das Begrüßungsmodal beim Laden der Seite
