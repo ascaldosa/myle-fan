@@ -5,17 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Myle - Fanpage von Marvin</title>
     <style>
+        html, body {
+            height: 100%; /* Stellt sicher, dass html und body die volle Höhe haben */
+            margin: 0; /* Entfernt Standard-Margin */
+            padding: 0; /* Entfernt Standard-Padding */
+        }
         body {
             font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-image: url('https://www.hellwegradio.de/externalimages/?source=jpg412/mylenot-ready.jpg&resize=1200x1200&dt=202203221736310'); /* Hintergrundbild */
-            background-size: cover; /* Bild deckt den gesamten Hintergrund ab */
-            background-position: center; /* Bild wird zentriert */
+            background-image: url('https://yt3.googleusercontent.com/bJB-HTA6xjrKglRoyFhtawT6MW5K4907y-Iv1HBUIKHP8CI7SvbthxHH_SxeGuhCaZjCF5FX0S8=s900-c-k-c0x00ffffff-no-rj');
+            background-size: cover; /* Deckt den gesamten Hintergrund ab */
+            background-repeat: no-repeat; /* Verhindert das Wiederholen des Hintergrundbildes */
+            background-position: center; /* Zentriert das Hintergrundbild */
+            background-attachment: fixed; /* Bild bleibt beim Scrollen fixiert */
             color: #ffffff;
+            padding-bottom: 50px; /* Platz für den Footer schaffen */
+            position: relative; /* Position für den Footer */
         }
         header {
-            background-color: rgba(200, 16, 46, 0.7); /* Dunkelrot mit Transparenz */
+            background-color: rgba(200, 16, 46, 0.7);
             padding: 20px;
             text-align: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
@@ -25,14 +32,33 @@
             font-size: 3em;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
         }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: rgba(40, 40, 40, 0.7); /* Dunkelgrau mit Transparenz */
+        #menu {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        #profile {
+            position: fixed;
+            top: 0;
+            right: -300px; /* Start off-screen */
+            width: 300px;
+            height: 100%;
+            background-color: rgba(68, 68, 68, 0.9);
+            padding: 20px;
+            border-radius: 5px;
+            transition: right 0.3s ease; /* Smooth transition */
+            z-index: 1000; /* Höherer z-index für das Profilmenü */
         }
         .dropdown {
             position: relative;
             display: inline-block;
+        }
+        nav {
+            display: flex; /* Flexbox für zentrierte Ausrichtung */
+            justify-content: center; /* Horizontale Zentrierung */
+            margin-top: -10px; /* Abstand nach oben anpassen */
         }
         .menu-button {
             background-color: #282828; /* Dunkelgrau */
@@ -48,112 +74,102 @@
             background-color: #c8102e; /* Dunkelrot */
         }
         .dropdown-content {
-            display: none;
-            position: absolute;
+            display: none; /* Standardmäßig ausgeblendet */
+            position: absolute; /* Positioniert das Dropdown relativ zum nächsten positionierten Element */
             background-color: #282828; /* Dunkelgrau */
             min-width: 160px;
             box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-            z-index: 1;
+            z-index: 999; /* Niedrigerer z-index für das Dropdown-Menü */
+            top: 70px; /* Positioniert das Dropdown direkt unter dem Header */
         }
         .dropdown-content a {
-            color: white;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-        }
-        .dropdown-content a:hover {
-            background-color: #c8102e; /* Dunkelrot */
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        .hero {
-            height: 400px; /* Höhe des Hero-Bereichs */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .hero h2 {
-            color: #ffffff;
-            font-size: 3em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }
-        .content {
-            padding: 20px;
-            max-width: 800px; /* Maximale Breite für den Inhalt */
-            margin-left: auto; /* Zentriert den Inhalt */
-            margin-right: auto; /* Zentriert den Inhalt */
-        }
-        footer {
-          background-color:#282828; /* Dunkelgrau */
-          color:#ffffff; 
-          text-align:center ; 
-          padding :10px ; 
-         }  
-
-         p { 
-          margin-bottom :20px ;  
-          line-height :1.6 ; 
+           color:white;
+           padding :12px ;
+           text-decoration :none ;
+           display :block ;
+       }
+       .dropdown-content a:hover {
+           background-color :#c8102e ;/* Dunkelrot*/
+       }
+         .button {
+             margin-top:auto;  
+             padding :15px;  
+             background-color :#555 ;
+             border:none ;
+             color:white ;
+             cursor:pointer ;
+             width :calc(100% -40px); 
          }
+         .close-button {
+             background-color :transparent;  
+             border:none;  
+             color:white;  
+             font-size :24px;  
+             position:absolute;  
+             top :10px;  
+             left :10px;  
+             cursor:pointer;  
+         }   
 
-         /* Modal Styles */
          .modal {
-           display:none; /* Hidden by default */
-           position:absolute; /* Stay in place */
-           z-index:1; /* Sit on top */
-           left:50%; 
-           top:50%; 
-           transform: translate(-50%, -50%) scale(0); /* Start scaled down for animation */
-           transition: transform 0.3s ease, opacity 0.3s ease; /* Animation for scaling and fading */
-           width:auto; /* Auto width for small modal */
-           max-width:90%; /* Max width for mobile devices */
-           height:auto; /* Auto height for small modal */
-           overflow:auto; /* Enable scroll if needed */
-           background-color:black; /* Schwarzer Hintergrund */
-           border-radius:15px; /* Abgerundete Ecken */
-           border: 5px solid gray; /* Grauer Rand */
-           opacity: 0; /* Start with invisible modal */
-         }
+           display:flex; 
+           justify-content:center; 
+           align-items:center; 
+           position:absolute; 
+           top :0 ; 
+           left :0 ; 
+           width :100%; 
+           height :100%; 
+           background-color :rgba(0,0,0,0.8); 
+           z-index :10000; 
+       }
 
-         .modal.show {
-           display:block; /* Show modal when active */
-           transform: translate(-50%, -50%) scale(1); /* Scale to normal size when shown */
-           opacity: 1; /* Make modal visible when shown */
-         }
+       .modal-content {
+           background-color :#444; 
+           padding :20px ;
+           border-radius :15px; /* Softere Ecken */
+           box-shadow :0 4px 20px rgba(0, 0, 0, 0.5); /* Verbesserter Schatten */
+           color:white ; 
+           width :300px ; 
+           text-align:center ; 
+       }
 
-         .modal-content {
-           padding:"20px"; /* Padding für den Inhalt */
-           color:"#ffffff"; /* Weiße Schrift */
-           text-align:center; /* Text zentrieren */
-         }
+       .modal-content h2 {
+           color:#ff4d4d ; 
+       }
 
-         .close {
-           background-color:#c8102e; /* Dunkelrot für den Button */
-           color:"#ffffff"; /* Weiße Schrift für den Button */
-           border:none; 
-           padding:"10px"; 
-           border-radius:"5px"; 
-           cursor:pointer; 
-           font-size:"16px"; 
-           transition:"background-color 0.3s ease"; 
-           margin-top:"20px"; /* Abstand nach oben hinzufügen */
-         }
+       input {
+           width :calc(100% -20px); 
+           padding :12px; /* Erhöhte Polsterung */
+           margin-top :10px ;
+           border-radius :5px ;
+           border :1px solid #ccc; /* Subtile Umrandung */
+       }
 
-         .close:hover {
-           background-color:#a60f24; /* Etwas dunkler bei Hover */
-         }
+       button {
+           margin-top :10px ;
+           background-color :#c8102e; /* Buttonfarbe */
+           color:white ;
+           border:none ;
+           padding :10px ; /* Erhöhte Polsterung für Buttons */
+           border-radius :5px ; /* Abgerundeter Button */
+           cursor:pointer ;
+       }
 
-         audio {
-             width: calc(100% - 40px); /* Breite des Players anpassen (40px für Padding) */
-             margin-top: 20px; 
-             background-color:#282828; /* Dunkelgrauer Hintergrund für den Player */
-             border-radius:5px; 
-             outline:none; 
-             border:none; 
-             color:white; 
-             padding-left :10px ; 
-             padding-right :10px ; 
-         }
+       button:hover {
+           background-color:#ff4d4d ; /* Hover-Effekt für Buttons */
+       }
+
+       footer {
+           position:absolute ;/* Fixiert den Footer am unteren Ende der Seite*/
+           bottom :0 ;/* Setzt den Footer an den unteren Rand*/
+           width :100%;/* Vollständige Breite des Footers*/
+           text-align:center ;/* Zentriert den Text im Footer*/
+           background-color:#808080 ;/* Graue Hintergrundfarbe*/
+           color:white ;/* Textfarbe Weiß*/
+           padding :5 px ;/* Innenabstand für den Footer (dünner)*/
+           z-index: 1; /* Höherer z-index für den Footer */
+       }
 
     </style>
 </head>
@@ -161,13 +177,35 @@
 
 <header>
    <h1>Myle</h1>
+   <div id="menu" onclick="toggleProfile()">☰ Menü</div> 
 </header>
+
+<div id="profile" style="display:none;"> <!-- Standardmäßig ausgeblendet -->
+    <button class="close-button" onclick="closeProfile()">✖</button> 
+    <h2>Ihr Profil</h2>
+    <p id="welcomeMessage">Willkommen! Hier können Sie Ihr Profil sehen.</p>
+    <button class="button" id="authButton" onclick="toggleAuth()">Anmelden / Registrieren</button> 
+</div>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2>Anmelden</h2>
+      <input type="text" id="username" placeholder="Benutzername" required>
+      <input type="password" id="password" placeholder="Passwort" required>
+      <button id="loginBtn">Einloggen</button>
+      <button id="registerBtn">Registrieren</button>
+      <div id="loginMessage"></div> 
+      <p id="noAccountMessage">Wenn du kein Konto hast, gehe auf das Menü und erstelle einen Account.</p> 
+      <button onclick="closeLoginModal()">Schließen</button>
+    </div>
+</div>
 
 <nav>
    <div class="dropdown">
-     <button class="menu-button">Menü</button>
+     <button class="menu-button" onclick="toggleDropdown()">Menü</button>
      <div class="dropdown-content">
-       <a href="myle.info.html">Infos über Myle</a>       <!-- Link zur neuen Seite -->
+       <a href="myle.info.html">Infos über Myle</a>       
        <a href="myle.team.html">Infos über Myle Team</a>
        <a href="Quiz.html">Quiz</a>
        <a href="Myle-winc-quiz.html">Quiz Myle/Wincent</a>
@@ -178,18 +216,7 @@
 </nav>
 
 <div class="hero">
-   <h2>Willkommen auf meiner Fanpage!</h2>
-</div>
-
-<div class="content" id="about">
-
-   <!-- Hinweis für den Musik-Button -->
-   <div style="text-align:center;">
-       <h4>Drücke Play für Hintergrundmusik:</h4>
-       <button id="musicButton" onclick="toggleMusic()" style="background-color:#c8102e;color:white;padding:10px;border:none;border-radius:5px;">Play</button>
-   </div>
-
-   <h3>Über mich - Marvin</h3>
+<h3>Über mich - Marvin</h3>
    <p>Hallo! Ich bin Marvin, 17 Jahre alt und komme aus Hamburg. Musik ist meine Leidenschaft, und Myle ist für mich mehr als nur ein Künstler – er inspiriert mich mit seinen Texten und Melodien.</p>
 
    <p>Ich verbinde mit seiner Musik Momente der Freude und des Nachdenkens. Seine Songs begleiten mich durch verschiedene Lebenslagen und geben mir das Gefühl, nicht allein zu sein.</p>
@@ -204,7 +231,7 @@
    &copy;2024 Marvin's Fanpage für Myle. Alle Rechte vorbehalten.
 </footer>
 
-<!-- Modal für die Begrüßung -->
+<!-- Willkommensmodal -->
 <div id="welcomeModal" class="modal">
     <div class="modal-content">
       <h2>Willkommen auf der Fanpage!</h2>
@@ -216,47 +243,131 @@
     </div>
 </div>
 
-<!-- Audio Player am Ende der Seite -->
-<audio id="backgroundMusic" loop style="display:none;">
-    <source src="https://raw.githubusercontent.com/ascaldosa/myle-fan/main/Audio/fuck%20it.m4a" type="audio/mp4">
-    Dein Browser unterstützt dieses Audio-Format nicht.
-</audio>
-
 <script>
-// Funktion zur Anzeige des Begrüßungsmodals
-function showWelcome() {
-    const modal = document.getElementById('welcomeModal');
-    
-    // Überprüfen, ob die Willkommensnachricht bereits angezeigt wurde
-    if (!sessionStorage.getItem('welcomeShown')) {
-        modal.classList.add('show'); // Füge die Klasse 'show' hinzu
-        sessionStorage.setItem('welcomeShown', 'true'); // Setze das Flag im sessionStorage
-    }
-}
+// Funktion zum Ein- und Ausblenden des Profilfensters
+function toggleProfile() {
+    var profile = document.getElementById('profile');
+    var dropdownContent = document.querySelector('.dropdown-content'); // Dropdown-Menü auswählen
+    var menuButton = document.getElementById('menu'); // Menü-Button auswählen
 
-// Funktion zum Schließen des Begrüßungsmodals
-function closeWelcome() {
-    const modal = document.getElementById('welcomeModal');
-    modal.classList.remove('show'); // Entferne die Klasse 'show'
-}
-
-// Funktion zum Umschalten von Play/Pause
-function toggleMusic() {
-    const music = document.getElementById('backgroundMusic');
-    const button = document.getElementById('musicButton');
-
-    if (music.paused) {
-        music.play();
-        button.textContent = 'Pause'; // Ändere den Button-Text auf "Pause"
+    if (profile.style.display === 'block') {
+        profile.style.right = '-300px'; // Schiebe das Fenster nach rechts
+        setTimeout(() => { 
+            profile.style.display = 'none'; // Verstecke das Fenster nach der Animation
+            menuButton.style.display = 'block'; // Zeige den Menü-Button wieder an
+        }, 300); 
+        dropdownContent.style.display = 'none'; // Verstecke das Dropdown-Menü
     } else {
-        music.pause();
-        button.textContent = 'Play'; // Ändere den Button-Text zurück auf "Play"
+        profile.style.display = 'block'; // Zeige das Fenster an
+        dropdownContent.style.display = 'none'; // Verstecke das Dropdown-Menü
+        menuButton.style.display = 'none'; // Blende den Menü-Button aus
+        setTimeout(() => { profile.style.right = '0'; }, 10); // Schiebe das Fenster herein
     }
 }
 
-// Zeige das Begrüßungsmodal beim Laden der Seite
-window.onload = showWelcome;
+// Funktion zum Schließen des Profilfensters
+function closeProfile() {
+   var profile = document.getElementById('profile');
+   var menuButton = document.getElementById('menu'); // Menü-Button auswählen
 
+   profile.style.right = '-300px'; // Schiebe das Fenster nach rechts
+   setTimeout(() => { 
+       profile.style.display = 'none'; // Verstecke das Fenster nach der Animation
+       menuButton.style.display = 'block'; // Zeige den Menü-Button wieder an
+   }, 300); // Verstecke nach der Animation den Button wieder anzeigen
+}
+
+// Funktion zur Anzeige des Login-Modals
+function showLoginModal() {
+    document.getElementById('loginModal').style.display = 'flex'; // Zeige das Modal an
+}
+
+// Funktion zum Schließen des Login-Modals
+function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none'; // Verstecke das Modal
+}
+
+// Funktion zur Anzeige von Nachrichten
+function showMessage(message) {
+    const messageDiv = document.getElementById('loginMessage');
+    messageDiv.textContent = message;
+}
+
+// Einloggen
+document.getElementById('loginBtn').onclick = function() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    
+    if (!username || !password) {
+        showMessage("Bitte fülle alle Felder aus!");
+        return;
+    }
+
+    localStorage.setItem('username', username);
+    showMessage("Login erfolgreich!");
+    
+    document.getElementById('authButton').textContent = "Abmelden";
+    
+    document.getElementById('welcomeMessage').textContent = `Willkommen zurück, ${username}!`;
+    
+    closeLoginModal();
+};
+
+// Registrieren
+document.getElementById('registerBtn').onclick = function() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    
+    if (!username || !password) {
+        showMessage("Bitte fülle alle Felder aus!");
+        return;
+    }
+
+    showMessage("Registrierung erfolgreich!");
+};
+
+// Funktion zum Umschalten zwischen Anmelden und Abmelden
+function toggleAuth() {
+    const authButton = document.getElementById('authButton');
+    
+    if (authButton.textContent === "Abmelden") {
+        localStorage.removeItem('username'); // Benutzer abmelden
+        authButton.textContent = "Anmelden / Registrieren"; // Button zurücksetzen
+        showMessage("Du hast dich abgemeldet."); // Erfolgsnachricht anzeigen
+        document.getElementById('welcomeMessage').textContent = "Willkommen! Hier können Sie Ihr Profil sehen.";
+    } else {
+        showLoginModal(); // Zeige das Login-Modul an
+    }
+}
+
+// Dropdown-Funktionalität hinzufügen
+function toggleDropdown() {
+    var dropdownContent = document.querySelector('.dropdown-content');
+    
+    if (dropdownContent.style.display === "block") {
+        dropdownContent.style.display = "none"; // Verstecke das Dropdown-Menü
+    } else {
+        dropdownContent.style.display = "block"; // Zeige das Dropdown-Menü an
+    }
+}
+
+// Überprüfen des Anmeldestatus beim Laden der Seite
+window.onload = function() {
+    const username = localStorage.getItem('username');
+    
+    if (username) {
+        document.getElementById('welcomeMessage').textContent = `Willkommen zurück, ${username}!`;
+        document.getElementById('authButton').textContent = "Abmelden"; // Setze den Button auf Abmelden
+    }
+
+   // Willkommensmodal beim Laden anzeigen
+   document.getElementById('welcomeModal').style.display = 'flex';
+};
+
+// Funktion zum Schließen des Willkommensmodals
+function closeWelcome() {
+   document.getElementById('welcomeModal').style.display = 'none';
+}
 </script>
 
 </body>
